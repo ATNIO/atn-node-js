@@ -1,62 +1,7 @@
-atn-node-js is for building browser AIapps & NodeJS services that interact with ATN Network.
+Copyright 2018 ATNIO <atn.io>
 
-![atn-js architecture](https://github.com/ATNIO/AI_market_plan/blob/master/images/ATN-JS.svg)
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-### TODO LIST
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-- [ ] getDbotCount
-- [ ] getDbotInfo
-- [ ] openChannel
-- [ ] topupChannel
-- [ ] closeRequest
-- [ ] closeChannel
-- [ ] settleChannel
-- [ ] getChannels
-- [ ] callAI
-
-### Getting started
-
-node version required:v8.11.3
-
-Clone this repository and install its dependencies:
-
-```
-git clone https://github.com/ATNIO/atn-js.git
-cd atn-js
-npm i
-```
-
-### NPM script
-
-- `npm run build` builds the library to `dist`
-
-	* `dist/lib/atn.js` A CommonJS bundle, suitable for use in Node.js, that requires the external dependency. This corresponds to the "main" field in package.json
-	* `dist/atn.es5.js` an ES module bundle, suitable for use in other people's libraries and applications, that imports the external dependency. This corresponds to the "module" field in package.json
-	* `dist/atn.umd.js` a UMD build, suitable for use in any environment (including the browser, as a <script> tag), that includes the external dependency. This corresponds to the "browser" field in package.json
-
- - `npm t`: Run test suite
- - `npm start`: Run `npm run build` in watch mode
- - `npm run test:watch`: Run test suite in [interactive watch mode](http://facebook.github.io/jest/docs/cli.html#watch)
- - `npm run test:prod`: Run linting and generate coverage
- - `npm run build`: Generate bundles and typings, create docs
- - `npm run lint`: Lints code
-
-### Usage
-
-**Step 1:**
-Getting all Dbot count
-`atn.getDbotCount()`
-
-**Step 2:**
-Getting a Dbot detail
-`atn.getDbotInfo()`
-
-**Step 3:**
-Opening a transfer channel
-`atn.openChannel()`
-
-**Step 4:**
-Calling the AI`lib.callAI()`
-
-
-
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
