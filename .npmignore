@@ -1,0 +1,9 @@
+/.vscode/
+/src/
+.babelrc
+.prettierignore
+.prettierrc
+tsconfig.json
+tslint.json
+yarn-error.log
+yarn.lock
