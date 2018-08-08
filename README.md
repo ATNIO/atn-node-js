@@ -1,6 +1,6 @@
 atn-node-js is for building browser AIapps & NodeJS services that interact with ATN Network.
 
-![atn-js architecture](https://github.com/ATNIO/AI_market_plan/blob/master/images/ATN-JS.svg)
+![atn-node-js architecture](https://github.com/ATNIO/AI_market_plan/blob/master/images/ATN-JS.svg)
 
 ### TODO LIST
 
@@ -21,8 +21,8 @@ node version required:v8.11.3
 Clone this repository and install its dependencies:
 
 ```
-git clone https://github.com/ATNIO/atn-js.git
-cd atn-js
+git clone https://github.com/ATNIO/atn-node-js.git
+cd atn-node-js
 npm i
 ```
 
