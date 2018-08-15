@@ -1,0 +1,40 @@
+{
+  "name": "atn-node-js",
+  "version": "0.0.3-alpha",
+  "description": "a light client lib for Dbot",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "ai",
+    "client",
+    "lib",
+    "dbot"
+  ],
+  "author": "ATNIO",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ATNIO/atn-node-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ATNIO/atn-node-js/issues",
+    "email": "zhangsunny0808@gmail.com"
+  },
+  "homepage": "https://github.com/ATNIO/atn-node-js",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bn.js": "^4.11.8",
+    "eth-sig-util": "^2.0.1",
+    "ethereumjs-tx": "^1.3.3",
+    "mocha": "^5.2.0",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "web3": "^1.0.0-beta.34",
+    "whatwg-encoding": "^1.0.3"
+  },
+  "devDependencies": {
+    "jest": "^23.4.2"
+  }
+}

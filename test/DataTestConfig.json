@@ -1,0 +1,7 @@
+{
+  "data":{
+    "image_url": "https://www.faceplusplus.com.cn/scripts/demoScript/images/demo-pic1.jpg",
+    "return_landmark": 1,
+    "return_attributes": "gender,age"
+  }
+}
