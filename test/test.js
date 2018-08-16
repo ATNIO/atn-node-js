@@ -30,15 +30,15 @@ describe('Atn Client NodeJS Test', function() {
     console.log('account:', account)
   })
 
-  // it('DbotFactory Method Test, Register', async function() {
-  //   console.log('==========================Register1==============================')
-  // 0x6cD97BC621437E3BdE6D682E9051eb80576ee035
-  // var result = atn.register('0x23ec269f4f76145e97303cb6236e21b7c9df5e9d')
-  // console.log('==========================Register2==============================')
-  //   result.then(function(result) {
-  //     console.log(result)
-  //   })
-  // })
+  it('DbotFactory Method Test, Register', async function() {
+    console.log('==========================Register1==============================')
+
+  var result = atn.register(dbotAddr)
+  console.log('==========================Register2==============================')
+    result.then(function(result) {
+      console.log(result)
+    })
+  })
 
   //
   // it(' Method ,OpenChannel ', async function() {
@@ -76,33 +76,33 @@ describe('Atn Client NodeJS Test', function() {
   // })
 
 
-  it('DbotFactory Method ,CallAI', function() {
-    console.log('===================DbotFactory Method ,CallAI==========================')
-    var dbotAddress = '0x23ec269f4f76145e97303cb6236e21b7c9df5e9d'
-    var method = 'post'
-    var uri = '/facepp/v3/detect'
-    var receiverAddress = '0x23ec269f4f76145e97303cb6236e21b7c9df5e9d'
-    var senderAddress = '0x6cd97bc621437e3bde6d682e9051eb80576ee035'
-    var blockNumber = 28675
-    var balance = 10
-    var price = 10
-    var from = '0x6cd97bc621437e3bde6d682e9051eb80576ee035'
-    let data = {
-      'image_url': 'https://www.faceplusplus.com.cn/scripts/demoScript/images/demo-pic1.jpg',
-      'return_landmark': 1,
-      'return_attributes': 'gender,age'
-    }
-    // dbotAddress, method, uri, receiverAddress, senderAddress, blockNumber, balance, price, option
-    var option = {
-      headers: { 'X-Requested-With': 'XMLHttpRequest' },
-      data: {
-        'image_url': 'https://www.faceplusplus.com.cn/scripts/demoScript/images/demo-pic1.jpg',
-        'return_landmark': 1,
-        'return_attributes': 'gender,age'
-      }
-    }
-    var result = atn.callAI(dbotAddress, method, uri, receiverAddress, senderAddress, blockNumber, balance, price, option)
-    console.log('result ================', result)
-  })
+  // it('DbotFactory Method ,CallAI', function() {
+  //   console.log('===================DbotFactory Method ,CallAI==========================')
+  //   var dbotAddress = '0x23ec269f4f76145e97303cb6236e21b7c9df5e9d'
+  //   var method = 'post'
+  //   var uri = '/facepp/v3/detect'
+  //   var receiverAddress = '0x23ec269f4f76145e97303cb6236e21b7c9df5e9d'
+  //   var senderAddress = '0x6cd97bc621437e3bde6d682e9051eb80576ee035'
+  //   var blockNumber = 28675
+  //   var balance = 10
+  //   var price = 10
+  //   var from = '0x6cd97bc621437e3bde6d682e9051eb80576ee035'
+  //   let data = {
+  //     'image_url': 'https://www.faceplusplus.com.cn/scripts/demoScript/images/demo-pic1.jpg',
+  //     'return_landmark': 1,
+  //     'return_attributes': 'gender,age'
+  //   }
+  //   // dbotAddress, method, uri, receiverAddress, senderAddress, blockNumber, balance, price, option
+  //   var option = {
+  //     headers: { 'X-Requested-With': 'XMLHttpRequest' },
+  //     data: {
+  //       'image_url': 'https://www.faceplusplus.com.cn/scripts/demoScript/images/demo-pic1.jpg',
+  //       'return_landmark': 1,
+  //       'return_attributes': 'gender,age'
+  //     }
+  //   }
+  //   var result = atn.callAI(dbotAddress, method, uri, receiverAddress, senderAddress, blockNumber, balance, price, option)
+  //   console.log('result ================', result)
+  // })
 
 })
