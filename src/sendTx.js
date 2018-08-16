@@ -3,14 +3,12 @@ const Tx = require('ethereumjs-tx')
 const gasConfig = require('./config/config')
 
 var getWallet = function(from, accounts) {
-  console.log('getWallet from:', from)
   var wallet = null
   if (_.isNumber(from)) {
     wallet = accounts.wallet[from]
   } else if (_.isObject(from) && from.address && from.privateKey) {
     wallet = from
   } else {
-    console.log('getWallet', from)
     wallet = accounts.wallet[from]
   }
   return wallet
@@ -32,7 +30,9 @@ module.exports = async (web3, contract, method, params, value) => {
       to: contract.options.address,
       data: callData
     }
+    console.log(' wallet.privateKey :', wallet.privateKey)
     let sign = await web3.eth.accounts.signTransaction(rawTx, wallet.privateKey)
+
     const receipt = web3.eth.sendSignedTransaction(sign.rawTransaction)
     return receipt
   } else {
