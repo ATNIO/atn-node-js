@@ -1,5 +1,6 @@
 var Atn = require('../src/atn')
 
+var Base64 = require('js-base64').Base64
 const privateKeyJson = require('../src/config/keystore')
 
 var Axio = require('axios')
@@ -33,8 +34,9 @@ describe('Atn Client NodeJS Test', function() {
   it('DbotFactory Method Test, Register', async function() {
     console.log('==========================Register1==============================')
 
-  var result = atn.register(dbotAddr)
-  console.log('==========================Register2==============================')
+
+    var result = atn.register(dbotAddr)
+    console.log('==========================Register2==============================')
     result.then(function(result) {
       console.log(result)
     })
@@ -74,6 +76,11 @@ describe('Atn Client NodeJS Test', function() {
   //   var result = await atn.getBanlanceSign(receiveAddress, blockNumber, balance)
   //   console.log('Banlance Sign ', result)
   // })
+
+
+  it('Method  getChannelInfo', async function() {
+
+  })
 
 
   // it('DbotFactory Method ,CallAI', function() {

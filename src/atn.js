@@ -285,11 +285,11 @@ module.exports = class Atn {
    * @param from
    * @returns {Promise<string>}
    */
-  async getBanlanceSign(receiverAddress, blockNumber, balance) {
+  getBanlanceSign(receiverAddress, blockNumber, balance) {
     const params = this.getBalanceProofSignatureParams(receiverAddress, blockNumber, balance)
     console.log('params:', params.toString())
     const hash = EthSignUtil.typedSignatureHash(params)
-    const sig = await this.signMessage(hash)
+    const sig = this.signMessage(hash)
     console.log('sig : ', sig)
     return sig
   }
@@ -380,10 +380,8 @@ module.exports = class Atn {
    * @param from
    * @returns {Promise<*>}
    */
-  topUpChannel(receiverAddress, blockNumber, value, from) {
-    this.setDefaultAccount(from)
-    return sendTx(this.web3, this.tcmc, 'topUp', [receiverAddress, blockNumber])
-    // return this.tcmc.methods.topUp(receiverAddress, blockNumber).send({ from, value })
+  topupChannel(receiverAddress, blockNumber, value) {
+    return sendTx(this.web3, this.tcmc, 'topUp(address,bytes32)', [receiverAddress, blockNumber])
   }
 
   /**
@@ -440,6 +438,7 @@ module.exports = class Atn {
    * @method Web3 Method - addAccount
    * @desc
    *
+   *
    * @param dbotAddress
    * @param method
    * @param uri
@@ -453,7 +452,7 @@ module.exports = class Atn {
    * @param opt
    * @returns {Promise<*>}
    */
-  async callAI(dbotAddress, method, uri, receiverAddress, senderAddress, blockNumber, balance, price, option) {
+  async callAI(dbotAddress, method, uri, receiverAddress, senderAddress, blockNumber, balance, option) {
     // 1. dbot init first
     let dbotContract
     try {
@@ -476,8 +475,6 @@ module.exports = class Atn {
     console.log('CallAI Key', key)
     let endPoint
     try {
-      endPoint = await sendTx(this.web3, dbotContract, 'keyToEndPoints(bytes32)', [key])
-
       endPoint = await dbotContract.methods.keyToEndPoints(key).call({ from: this.web3.eth.defaultAccount })
       console.log('CallAI EndPoint', endPoint)
     } catch (e) {
@@ -488,31 +485,40 @@ module.exports = class Atn {
       })
     }
     //3.获取Dbot地址之后 要验证 签名是否正确
-    const newBalance = balance + price
+    const newBalance = balance + endPoint.price
     console.log('newBalance==============', newBalance)
     console.log('CallAI Key', key)
     const dbotURL = `http://${dbotDomain}/call/${dbotAddress}${uri}`
-
-    console.log('callAI ==========', dbotURL)
     // 将balance和price注册到请求头中
-    option.headers.balance = newBalance
-    option.headers.price =  Number.parseInt(endPoint.price)
+    /**
+     *PRICE = 'RDN-Price'
+     CONTRACT_ADDRESS = 'RDN-Contract-Address'
+     RECEIVER_ADDRESS = 'RDN-Receiver-Address'
+     TOKEN_ADDRESS = 'RDN-Token-Address'
+     PAYMENT = 'RDN-Payment'
+     BALANCE = 'RDN-Balance'
+     BALANCE_SIGNATURE = 'RDN-Balance-Signature'
+     SENDER_ADDRESS = 'RDN-Sender-Address'
+     SENDER_BALANCE = 'RDN-Sender-Balance'
+     GATEWAY_PATH = 'RDN-Gateway-Path'
+     COST = 'RDN-Cost'
+     OPEN_BLOCK = 'RDN-Open-Block'
+     *
+     */
+    option.headers.price = Number.parseInt(endPoint.price)
+    option.headers.balance_signature = this.getBalanceProofSignatureParams(receiverAddress, blockNumber, newBalance)
+    option.headers.sender_address = senderAddress
+    option.headers.receiver_address = receiverAddress
+    option.headers.open_block = blockNumber
     option.url = dbotURL
-    // option.url = dbotURL
-    // let data = {
-    //   'image_url': 'https://www.faceplusplus.com.cn/scripts/demoScript/images/demo-pic1.jpg',
-    //   'return_landmark': 1,
-    //   'return_attributes': 'gender,age'
-    // }
-    // option.setData(data)
-    console.log('axion request config :', option)
-    return axios(option)
+    console.log('axio request config :', option)
+    return
   }
 
 
   /**
    * @method Web3 Method - openChannel
-   * @desc If you use this Me
+   * @desc If you
    *
    * @param receiverAddress
    * @param value
@@ -530,13 +536,14 @@ module.exports = class Atn {
       channelInfo = await axios.get(url)
     } catch (e) {
       console.error(e.name, e.message)
+      throw new Error('Open Channel Uu')
     }
     //请求dbot服务器地址，判断channel是否存在
     if (channelInfo.status == 200) {
       console.log('channelInfo.data.length ', channelInfo.data.length)
       if (channelInfo.data === '[]') {
         console.log('sendTx start')
-        return await sendTx(this.web3, this.tcmc, 'createChannel(address)', [receiverAddress], value)
+        return sendTx(this.web3, this.tcmc, 'createChannel(address)', [receiverAddress], value)
       } else {
         throw new Error('Channel has exist')
       }
@@ -547,8 +554,8 @@ module.exports = class Atn {
 
 
   /**
-   * @method NodeJS Method - closeChannel
-   * @desc If you use this Me
+   * @method Channel Method CloseChannel
+   * @desc If
    *
    * @param receiverAddress
    * @param senderAddress
@@ -561,22 +568,20 @@ module.exports = class Atn {
     var dbotWeb3 = new this.web3.eth.Contract(DbotJson.abi, receiverAddress)
     var domain = Web3.utils.hexToString(await dbotWeb3.methods.domain().call({ from: receiverAddress }))
     const URL = `http://${domain}/api/v1/dbots/${dbotAddress}/channels/${senderAddress}/${blockNumber}`.toString()
-    console.log('1. url:', URL)
+    console.log('closeChannel delete. url:', URL)
     let closeSignChannelInfo
     try {
       closeSignChannelInfo = await axios.delete(URL, { data: { balance: balance } })
       console.log('closeSignChannelInfo : ', closeSignChannelInfo)
+      // JSON.stringify(closeSignChannelInfo).
     } catch (e) {
       console.error(e.name, e.message)
+      throw new Error('Get Delete Close_Signature Error')
     }
     if (closeSignChannelInfo.status == 200) {
       let banlanceSignature = await this.getBanlanceSign(receiverAddress, blockNumber, balance)
-      console.log('balanceSignature : ', banlanceSignature)
       let closeSignature = closeSignChannelInfo.data.close_signature
-      console.log('last_signature : ', closeSignature)
-      const result = sendTx(this.web3, this.tcmc, 'cooperativeClose(address,uint32,uint256,bytes,bytes)', [dbotAddress, blockNumber, balance, banlanceSignature, closeSignature])
-      this.withdraw()
-      return result
+      return sendTx(this.web3, this.tcmc, 'cooperativeClose(address,uint32,uint256,bytes,bytes)', [dbotAddress, blockNumber, balance, banlanceSignature, closeSignature])
     } else {
       throw new Error('CloseChannel Method:Error response from dbot server')
     }
