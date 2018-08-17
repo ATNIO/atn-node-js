@@ -29,6 +29,7 @@
     "eth-sig-util": "^2.0.2",
     "ethereumjs-tx": "^1.3.3",
     "ethereumjs-util": "^5.2.0",
+    "iconv-lite": "^0.4.23",
     "mocha": "^5.2.0",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",

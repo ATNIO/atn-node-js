@@ -509,6 +509,68 @@ module.exports = class Atn {
     return axios(option)
   }
 
+  async newCallAI(dbotAddress, method, uri, option, channelInfo, price, balanceSig) {
+    // 1. dbot init first
+    let dbotContract
+    try {
+      dbotContract = new this.web3.eth.Contract(DbotJson.abi, dbotAddress)
+    } catch (e) {
+      const errMsg = 'CallAI ' + e.name + ':' + 'Init DbotContract Fail' + e.message
+      console.log(errMsg)
+      return new Promise < String > (resolve => {
+        return resolve(errMsg)
+      })
+    }
+    // 2. 判断 EndPoint是否存在于链上  如果在验证通过，不再提示用户链上在自己的dbot上注册Endpoint信息
+    // const dbotDomain = Web3.utils.hexToString(await dbotContract.methods.domain().call({  }))
+    const dbotDomain = Web3.utils.hexToString(await dbotContract.methods.domain().call({ from: this.web3.eth.defaultAccount }))
+    // console.log('====================dbotDomain======================',dbotDomain)
+    // const key = await dbotContract.methods.getKey(Web3.utils.stringToHex(method), Web3.utils.stringToHex(uri)).call({ from })
+    // const key = await sendTx(this.web3, dbotContract, 'getKey(bytes32,bytes32)', [Web3.utils.stringToHex(method), Web3.utils.stringToHex(uri)])
+    // Web3.utils.stringToHex(method), Web3.utils.stringToHex(uri)
+    const key = await dbotContract.methods.getKey(Web3.utils.stringToHex(method), Web3.utils.stringToHex(uri)).call({ from: this.web3.eth.defaultAccount })
+    console.log('CallAI Key', key)
+    let endPoint
+    try {
+      endPoint = await sendTx(this.web3, dbotContract, 'keyToEndPoints(bytes32)', [key])
+
+      endPoint = await dbotContract.methods.keyToEndPoints(key).call({ from: this.web3.eth.defaultAccount })
+      console.log('CallAI EndPoint', endPoint)
+    } catch (e) {
+      const errMsg = 'CallAI ' + e.name + ':' + 'Get EndPoint Fail' + e.message
+      console.log(errMsg)
+      return new Promise < String > (resolve => {
+        return resolve(errMsg)
+      })
+    }
+
+    //3.获取Dbot地址之后 要验证 签名是否正确
+    const newBalance = channelInfo['balance'] + price
+    console.log('newBalance==============', newBalance)
+    console.log('CallAI Key', key)
+    const dbotURL = `http://${dbotDomain}/call/${dbotAddress}${uri}`
+
+    console.log('callAI ==========', dbotURL)
+    option.url = dbotURL
+    // 将balance和price注册到请求头中
+    option.headers.RDN_balance = newBalance
+    option.headers.RDN_balance_signature = balanceSig
+    option.headers.RDN_sender_address = channelInfo['sender']
+    option.headers.RDN_receiver_address = channelInfo['receiver']
+    option.headers.RDN_open_block = channelInfo['open_block_number']
+
+    // option.headers.balance = newBalance
+    // option.headers.price =  Number.parseInt(endPoint.price)
+    // option.url = dbotURL
+    // let data = {
+    //   'image_url': 'https://www.faceplusplus.com.cn/scripts/demoScript/images/demo-pic1.jpg',
+    //   'return_landmark': 1,
+    //   'return_attributes': 'gender,age'
+    // }
+    // option.setData(data)
+    console.log('axion request config :', option)
+    return axios(option)
+  }
 
   /**
    * @method Web3 Method - openChannel
