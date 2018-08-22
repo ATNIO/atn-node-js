@@ -3,7 +3,7 @@ const EthSignUtil = require('eth-sig-util')
 const ethUtil = require('ethereumjs-util')
 const Web3 = require('web3')
 const axios = require('axios')
-const bignumber =require('bignumber.js')
+const bignumber = require('bignumber.js')
 
 const privateKeyJson = require('./config/keystore')
 const DbotJson = require('./contracts/dbot/dbot.json')
@@ -40,10 +40,6 @@ module.exports = class Atn {
 
     this.tcmc = new this.web3.eth.Contract(TransferChannelJson.abi, this.tcmcDefaultAddress)
 
-    this.senderAccount = this.web3.eth.accounts.privateKeyToAccount('0x' + this.private_key)
-
-    this.web3.eth.accounts.wallet.add(this.senderAccount)
-
 
   }
 
@@ -58,6 +54,7 @@ module.exports = class Atn {
     var account = this.web3.eth.accounts.privateKeyToAccount('0x' + this.private_key)
     this.web3.eth.accounts.wallet.add(account)
   }
+
 
   getDefaultAccount() {
     return this.web3.eth.defaultAccount
@@ -81,7 +78,7 @@ module.exports = class Atn {
    * @param dbotAddress
    * @returns {Promise<*>}
    */
-  register(dbotAddress) {
+  async register(dbotAddress) {
     console.log('================================Register=================================')
     return sendTx(this.web3, this.dfmc, 'register(address)', [dbotAddress])
   }
@@ -108,121 +105,94 @@ module.exports = class Atn {
    * @param from
    * @returns {Promise<*>}
    */
-  changeName(name, dbotAddress, from) {
+  async changeName(name, dbotAddress, from) {
     this.setDefaultAccount(from)
     const initialDbot = new this.web3.eth.Contract(DbotJson.abi, dbotAddress)
-    return sendTx(this.web3, initialDbot, 'changeName()', [name], null)
+    return sendTx(this.web3, initialDbot, 'changeName(bytes32)', [name], null)
   }
 
+
   /**
-   *
-   * @method Web3 Method - addAccount
-   * @desc
+   * @method Web3 Method - changeDomain
+   * @desc   This is a method change the Dbot's domain
    *
    * @param domain
    * @param dbotAddress
    * @param from
    * @returns {Promise<*>}
    */
-  changeDomain(domain, dbotAddress, from) {
+  async changeDomain(domain, dbotAddress, from) {
     this.setDefaultAccount(from)
     const initialDbot = new this.web3.eth.Contract(DbotJson.abi, dbotAddress)
-    return sendTx(this.web3, initialDbot, 'changeDomain', [domain], null)
+    return sendTx(this.web3, initialDbot, 'changeDomain(bytes32)', [domain], null)
   }
-
-  // changeNameAndDomain(name  , domain  , dbotAddress  , from  )  {
-  //   const initialDbot = new this.web3.eth.Contract(DbotJson.abi, dbotAddress)
-  //   return initialDbot.methods.changeNameAndDomain(name, domain).send({ from })
-  // }
 
 
   /**
-   * @method Web3 Method - addAccount
-   * @desc
+   * @method Web3 Method - addEndPoint
+   * @desc   This is a method add Dbot's endPoint
    *
-   * @param action
+   *
+   * @param method
    * @param price
    * @param uri
    * @param dbotAddress
    * @param from
    * @returns {Promise<*>}
    */
-  addEndPoint(action, price, uri, dbotAddress, from) {
+  async addEndPoint(method, price, uri, dbotAddress, from) {
     this.setDefaultAccount(from)
     const initialDbot = new this.web3.eth.Contract(DbotJson.abi, dbotAddress)
-    return sendTx(this.web3, initialDbot, 'addEndPoint', [action, price, uri], null)
+    return sendTx(this.web3, initialDbot, 'addEndPoint(bytes32,uint256,bytes32)', [method, price, uri], null)
   }
 
 
   /**
-   * @method Web3 Method - addAccount
-   * @desc
+   * @method Web3 Method - updateEndPoint
+   * @desc   This is a method to update endPoint of Dbot's
    *
-   * @param action
+   *
+   * @param method
    * @param price
    * @param uri
    * @param dbotAddress
    * @param from
    * @returns {Promise<*>}
    */
-  updateEndPoint(action, price, uri, dbotAddress, from) {
+  async updateEndPoint(method, price, uri, dbotAddress, from) {
     this.setDefaultAccount(from)
     const initialDbot = new this.web3.eth.Contract(DbotJson.abi, dbotAddress)
-    return sendTx(this.web3, initialDbot, 'updateEndPoint', [action, price, uri], null)
+    return sendTx(this.web3, initialDbot, 'updateEndPoint(bytes32,uint256,bytes32)', [method, price, uri])
   }
 
+
   /**
-   * @method Web3 Method - addAccount
+   * @method Web3 Method - deleteEndPoint
    * @desc
    *
-   * @param action
+   * @param method
    * @param uri
    * @param dbotAddress
    * @param from
    * @returns {Promise<*>}
    */
-  deleteEndPoint(action, uri, dbotAddress, from) {
+  async deleteEndPoint(method, uri, dbotAddress, from) {
     this.setDefaultAccount(from)
     const initialDbot = new this.web3.eth.Contract(DbotJson.abi, dbotAddress)
-    return sendTx(this.web3, initialDbot, 'deleteEndPoint', [action, uri])
+    return sendTx(this.web3, initialDbot, 'deleteEndPoint(bytes32,bytes32)', [method, uri])
   }
 
-  /**
-   * @method Web3 Method - addAccount
-   * @desc
-   *
-   * @param from
-   * @returns {Promise<*>}
-   */
-  getVersion(from) {
-    this.setDefaultAccount(from)
-    return sendTx(this.web3, this.tcmc, 'version')
-  }
 
   /**
    * @method Web3 Method - addAccount
    * @desc
    *
    * @param transferChannelContract
-   * @param from
-   * @returns {Promise<*>}
+   * @returns {*}
    */
-  getChallengePeriod(transferChannelContract, from) {
-    this.setDefaultAccount(from)
+  async getOwnerAddress(transferChannelContract) {
     const rmtc = new this.web3.eth.Contract(TransferChannelJson.abi, transferChannelContract)
-    return sendTx(this.web3, this.tcmc, 'challengePeriod')
-  }
-
-  /**
-   * @method Web3 Method - addAccount
-   * @desc
-   *
-   * @param transferChannelContract
-   * @returns {Promise<*>}
-   */
-  getOwnerAddress(transferChannelContract) {
-    const rmtc = new this.web3.eth.Contract(TransferChannelJson.abi, transferChannelContract)
-    return sendTx(this.web3, rmtc, 'ownerAddress', [])
+    return rmtc.methods.ownerAddress().call()
   }
 
 
@@ -235,65 +205,72 @@ module.exports = class Atn {
    * @param blockNumber
    * @returns {Promise<*>}
    */
-  getChannelInfo(receiverAddress, senderAddress, blockNumber) {
-    return sendTx(this.web3, this.tcmc, 'getChannelInfo(address,address,uint32)', [senderAddress, receiverAddress, blockNumber])
+  async getChannelInfo(receiverAddress, senderAddress, blockNumber) {
+    // return sendTx(this.web3, this.tcmc, 'getChannelInfo(address,address,uint32)', [senderAddress, receiverAddress, blockNumber])
+    return this.tcmc.methods.getChannelInfo(senderAddress, receiverAddress, blockNumber)
   }
 
 
   /**
+   * @method Web3 Method - topUp
+   * @desc This is a method to topup the channel deposit
    *
    * @param receiverAddress
    * @param senderAddress
    * @param blockNumber
    * @param value
-   * @returns {*}
+   * @returns {Promise<*>}
    */
-  topUp(receiverAddress, senderAddress, blockNumber, value) {
+  async topUp(receiverAddress, senderAddress, blockNumber, value) {
     return sendTx(this.web3, this.tcmc, 'topUp(address,address,uint32)', [senderAddress, receiverAddress, blockNumber], value)
     // return this.tcmc.methods.topUp(receiverAddress, senderAddress, blockNumber).send({ from, value })
   }
 
+
   /**
-   * @method Web3 Method - addAccount
-   * @desc
+   * @method Web3 Method - getKey
+   * @desc This is a method to get channel mapping key
    *
    * @param senderAddress
    * @param receiveAddress
    * @param blockNumber
    * @param from
-   * @returns {Promise<*>}
+   * @returns {Promise<any>}
    */
-  getKey(senderAddress, receiveAddress, blockNumber, from) {
+  async getKey(senderAddress, receiveAddress, blockNumber, from) {
     this.setDefaultAccount(from)
-    return sendTx(this.web3, this.tcmc, 'getKey', [senderAddress, receiveAddress, blockNumber])
+    return this.tcmc.methods.getKey(senderAddress, receiveAddress, blockNumber).call({ from: from })
+    // return sendTx(this.web3, this.tcmc, 'getKey', [senderAddress, receiveAddress, blockNumber])
   }
 
 
   /**
-   * @method Web3 Method - addAccount
+   * @method Web3 Method - keyToChannel
    * @desc
    *
    * @param channelKey
    * @param from
    * @returns {Promise<*>}
    */
-  keyToChannel(channelKey, from) {
+  async keyToChannel(channelKey, from) {
     this.setDefaultAccount(from)
-    return sendTx(this.web3, this.tcmc, 'channels', [channelKey])
+    // return sendTx(this.web3, this.tcmc, 'channels', [channelKey])
+    return this.tcmc.methods.channels(channelKey).call({ from: from })
   }
 
 
   /**
-   * @method Web3 Method - addAccount
+   * @method Web3 Method - getWithdrawbalance
    * @desc
    *
    * @param key
    * @param from
    * @returns {Promise<*>}
    */
-  getWithdrawbalance(key, from) {
+  async getWithdrawbalance(key, from) {
     this.setDefaultAccount(from)
-    return sendTx(this.web3, this.tcmc, 'withdrawn_balances(uint256)', [key])
+    // return sendTx(this.web3, this.tcmc, 'withdrawn_balances(uint256)', [key])
+    return this.tcmc.methods.withdrawn_balances(key).call({ from })
   }
 
 
@@ -384,9 +361,10 @@ module.exports = class Atn {
    * @param from
    * @returns {Promise<*>}
    */
-  getClosingRequests(key, from) {
+  async getClosingRequests(key, from) {
     this.setDefaultAccount(from)
-    return sendTx(this.web3, this.tcmc, 'closing_requests', [key])
+    // return sendTx(this.web3, this.tcmc, 'closing_requests', [key])
+    return this.tcmc.methods.closing_requests(key).call({ from })
   }
 
 
@@ -400,30 +378,30 @@ module.exports = class Atn {
    * @param from
    * @returns {Promise<*>}
    */
-  topupChannel(receiverAddress, blockNumber, value) {
+  async topupChannel(receiverAddress, blockNumber, value) {
     return sendTx(this.web3, this.tcmc, 'topUp(address,bytes32)', [receiverAddress, blockNumber], value)
   }
 
-  /**
-   * @method Web3 Method - addAccount
-   * @desc
-   *
-   * @param senderAddress
-   * @param receiverAddress
-   * @param blockNumber
-   * @param value
-   * @param from
-   * @returns {Promise<*>}
-   */
-  topUpdateDelegateChannel(senderAddress, receiverAddress, blockNumber, value, from) {
-    this.setDefaultAccount(from)
-    return sendTx(this.web3, this.tcmc, 'topUpDelegate(address,address,uint32)', [senderAddress, receiverAddress, blockNumber])
-    // return this.tcmc.methods.topUpDelegate(senderAddress, receiverAddress, blockNumber).send({ from, value })
-  }
+  // /**
+  //  * @method Web3 Method - addAccount
+  //  * @desc
+  //  *
+  //  * @param senderAddress
+  //  * @param receiverAddress
+  //  * @param blockNumber
+  //  * @param value
+  //  * @param from
+  //  * @returns {Promise<*>}
+  //  */
+  // topUpdateDelegateChannel(senderAddress, receiverAddress, blockNumber, value, from) {
+  //   this.setDefaultAccount(from)
+  //   return sendTx(this.web3, this.tcmc, 'topUpDelegate(address,address,uint32)', [senderAddress, receiverAddress, blockNumber])
+  //   // return this.tcmc.methods.topUpDelegate(senderAddress, receiverAddress, blockNumber).send({ from, value })
+  // }
 
 
   /**
-   * @method Web3 Method - addAccount
+   * @method Web3 Method - settleChannel
    * @desc
    *
    * @param receiveAddress
@@ -431,9 +409,9 @@ module.exports = class Atn {
    * @param from
    * @returns {Promise<*>}
    */
-  settleChannel(receiveAddress, blockNumber, from) {
+  asyc settleChannel(receiveAddress, blockNumber, from) {
     this.setDefaultAccount(from)
-    return sendTx(this.web3, this.tcmc, 'settle()', [receiveAddress, blockNumber])
+    return sendTx(this.web3, this.tcmc, 'settle(address,uint32)', [receiveAddress, blockNumber])
     // return this.tcmc.methods.settle(receiveAddress, blockNumber).send({ from })
   }
 
@@ -469,7 +447,6 @@ module.exports = class Atn {
     }
     //3. channel是否存在，存在则不需要open，不存在open
     let url = `http://${dbotDomain}/api/v1/dbots/${dbotAddress}/channels/${this.web3.eth.defaultAccount}`
-    console.log('---------------error url -----------------', url)
     let channelInfoAarry
     try {
       channelInfoAarry = await axios.get(url)
@@ -480,7 +457,6 @@ module.exports = class Atn {
     }
     let channelInfo = channelInfoAarry.data[0]
     //4.获取Dbot地址之后要验证 签名是否正确
-    console.log('balance==============', channelInfo.balance)
     const bigBalance = new bignumber.BigNumber(channelInfo.balance)
     // console.log(' endPoint.price          ==============',  endPoint.price)
     // bigBalance.plus(new bignumber.BigNumber(endPoint.price, 10))
@@ -512,52 +488,6 @@ module.exports = class Atn {
     return result
   }
 
-  async newCallAI(dbotAddress, method, uri, option, channelInfo, price, balanceSig) {
-    // 1. dbot init first
-    let dbotContract
-    try {
-      dbotContract = new this.web3.eth.Contract(DbotJson.abi, dbotAddress)
-    } catch (e) {
-      const errMsg = 'CallAI ' + e.name + ':' + 'Init DbotContract Fail' + e.message
-      console.log(errMsg)
-      return new Promise < String > (resolve => {
-        return resolve(errMsg)
-      })
-    }
-    // 2. 判断 EndPoint是否存在于链上  如果在验证通过，不再提示用户链上在自己的dbot上注册Endpoint信息
-    const dbotDomain = Web3.utils.hexToString(await dbotContract.methods.domain().call({ from: this.web3.eth.defaultAccount }))
-    const key = await dbotContract.methods.getKey(Web3.utils.stringToHex(method), Web3.utils.stringToHex(uri)).call({ from: this.web3.eth.defaultAccount })
-    console.log('CallAI Key', key)
-    let endPoint
-    try {
-      // endPoint = await sendTx(this.web3, dbotContract, 'keyToEndPoints(bytes32)', [key])
-      endPoint = await dbotContract.methods.keyToEndPoints(key).call({ from: this.web3.eth.defaultAccount })
-      console.log('CallAI EndPoint', endPoint)
-    } catch (e) {
-      const errMsg = 'CallAI ' + e.name + ':' + 'Get EndPoint Fail' + e.message
-      console.log(errMsg)
-      return new Promise < String > (resolve => {
-        return resolve(errMsg)
-      })
-    }
-    //3.获取Dbot地址之后 要验证 签名是否正确
-    const newBalance = channelInfo['balance'] + price
-    console.log('newBalance==============', newBalance)
-    console.log('CallAI Key', key)
-    const dbotURL = `http://${dbotDomain}/call/${dbotAddress}${uri}`
-    console.log('callAI ==========', dbotURL)
-    option.url = dbotURL
-    // 将balance和price注册到请求头中
-    option.headers.RDN_balance = newBalance
-    option.headers.RDN_balance_signature = balanceSig
-    option.headers.RDN_sender_address = channelInfo['sender']
-    option.headers.RDN_receiver_address = channelInfo['receiver']
-    option.headers.RDN_open_block = channelInfo['open_block_number']
-    console.log('axion request config :', option)
-    var result = axios(option)
-    console.log('-----------------', result)
-    return axios(option)
-  }
 
   /**
    * @method Web3 Method - openChannel
@@ -616,7 +546,7 @@ module.exports = class Atn {
     var dbotWeb3 = new this.web3.eth.Contract(DbotJson.abi, receiverAddress)
     var domain = Web3.utils.hexToString(await dbotWeb3.methods.domain().call({ from: receiverAddress }))
     const URL = `http://${domain}/api/v1/dbots/${dbotAddress}/channels/${senderAddress}/${blockNumber}`.toString()
-    console.log('closeChannel delete. url:', URL)
+    console.log('--------------------CloseChannel delete. url--------------------', URL)
     let closeSignChannelInfo
     try {
       closeSignChannelInfo = await axios.delete(URL, { data: { balance: balance } })
