@@ -17,12 +17,12 @@ var getWallet = function(from, accounts) {
 
 module.exports = async (web3, contract, method, params, value) => {
   let wallet = getWallet(web3.eth.defaultAccount, web3.eth.accounts)
-  console.log('default account', web3.eth.defaultAccount)
+  console.log('==========================SendTx start==============================\n')
   if (wallet && wallet.privateKey) {
-    console.log('callData', params)
-    console.log('method', method)
+    console.log('sendTx---------accounts', web3.eth.defaultAccount)
+    console.log('sendTx---------method', method)
+    console.log('sendTx---------params', params)
     const callData = contract.methods[method](...params).encodeABI()
-
     const rawTx = {
       value: value,
       gasPrice: gasConfig.gasPrice,
@@ -30,10 +30,11 @@ module.exports = async (web3, contract, method, params, value) => {
       to: contract.options.address,
       data: callData
     }
-    console.log(' wallet.privateKey :', wallet.privateKey)
+    console.log('wallet.privateKey :', wallet.privateKey)
     let sign = await web3.eth.accounts.signTransaction(rawTx, wallet.privateKey)
-
-    const receipt = web3.eth.sendSignedTransaction(sign.rawTransaction)
+    const receipt = await web3.eth.sendSignedTransaction(sign.rawTransaction)
+    console.log('sendTx---------receipt', receipt.transactionHash)
+    console.log('==========================SendTx end==============================\n')
     return receipt
   } else {
     throw new Error('wallet is required')
