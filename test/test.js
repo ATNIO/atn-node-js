@@ -151,8 +151,6 @@ describe('Atn Client NodeJS Test', function() {
     }).catch(function(error) {
       console.log(error)
     })
-    return
-    // var result = atn.callAPI(dbotAddr, method, uri, dbotAddr, senderAddress, blockNumber, balance, price, option)
     console.log('result ================', result)
   })
 
