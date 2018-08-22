@@ -505,8 +505,7 @@ module.exports = class Atn {
       return result
     } else if (result.status === 402) {
       console.log('402-----------------', result.headers)
-    } else if (result.response.status === 404) {
-      console.log('----------------404---------------------------', result.response)
+    } else {
       return new Promise(result.data)
     }
     // console.log('-------------callAPI result-------------', result)

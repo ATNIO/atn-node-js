@@ -111,8 +111,8 @@ describe('Atn Client NodeJS Test', function() {
     console.log('===================DbotFactory Method ,CallAI Test Start==========================')
     var domain = 'localhost:5000'
     var method = 'post'
-    // var uri = '/rpc/2.0/nlp/v1/lexer'
-    var uri = '/facepp/v3/detect'
+    var uri = '/rpc/2.0/nlp/v1/lexer'
+    // var uri = '/facepp/v3/detect'
     // var receiverAddress = dbotAddr
     var senderAddress = '0x6cD97BC621437E3BdE6D682E9051eb80576ee035'
     // var blockNumber = 135173
@@ -125,20 +125,16 @@ describe('Atn Client NodeJS Test', function() {
     let channelInfo = response.data[0]
     console.log('Test ChannelInfo------------------------- ', channelInfo)
     let data = {
-      // 'text': '百度是一家高科技公司'
-      'image_url': 'https://www.faceplusplus.com.cn/scripts/demoScript/images/demo-pic1.jpg',
-      'return_landmark': 1,
-      'return_attributes': 'gender,age'
+      'text': '百度是一家高科技公司'
     }
-    // var gbkBytes = iconv.encode(JSON.stringify(data), 'gbk')
+    var gbkBytes = iconv.encode(JSON.stringify(data), 'gbk')
 
     // dbotAddress, method, uri, receiverAddress, senderAddress, blockNumber, balance, price, option
     var option = {
       headers: { 'Content-Type': 'application/json' },
-      // responseEncoding: 'GBK',
+      responseEncoding: 'GBK',
       method: method,
-      // data: gbkBytes
-      data: data
+      data: gbkBytes
     }
     console.log('params++++++++++++++++++++++++++', channelInfo['receiver'], channelInfo['open_block_number'], channelInfo['balance'] + price)
     // var balanceSig = await atn.getBanlanceSign(channelInfo['receiver'], channelInfo['open_block_number'], channelInfo['balance'] + price)
