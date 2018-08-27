@@ -1,0 +1,30 @@
+{
+    "info": {
+        "name": "Speech synthesis",
+        "domain": "localhost:5000",
+        "description": "Speech synthesis DBot from [xfyun](https://www.xfyun.cn/).",
+        "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWxsTxF3PS5Xz8SuMuukyZU6jVDikZIucjqEGchB2kgJTGLC04",
+        "category": "voice",
+        "tags": [
+            "AI",
+            "technology"
+        ]
+    },
+    "endpoints": [
+        {
+            "uri": "/tts",
+            "path": "/v1/service/v1/tts",
+            "method": "post",
+            "price": 1000000000000000
+        }
+    ],
+    "specification": {
+        "type": "swagger",
+        "format": "json",
+        "file": "dbot_swagger_speech_synthesis.json"
+    },
+    "middleware": {
+        "module": "dbot_middleware_speech_synthesis",
+        "class": "AppKey"
+    }
+}

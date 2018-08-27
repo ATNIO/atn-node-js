@@ -1,239 +1,146 @@
-var Atn = require('../src/atn')
+"use strict"
+let Web3 = require('web3')
+let BigNumber =require('bignumber.js')
+let assert = require('assert');
+let sleep = require('sleep')
 
-var Base64 = require('js-base64').Base64
-const privateKeyJson = require('../src/config/keystore')
+let Atn = require('../src/atn')
+const Config = require('./config.json')
+const DbotProfile = require(Config.dbot.profile)
 
-var axios = require('axios')
-var iconv = require('iconv-lite')
+const keystore = require('./accounts/node01/keystore/UTC--2018-06-19T08-46-57.628797023Z--845c0aaba0dabd59115c0601b429e23ec713cc80')
+const password = 'passwd'
 
-const dataJson = require('./DataTestConfig')
-
-
-describe('Atn Client NodeJS Test', function() {
-
-
-  const privateKey = privateKeyJson.privateKey
-
-  const atn = new Atn(privateKey)
-
-  // const dbotAddr = '0x15d58205fe0f296a075bd6cd34cd27ae72dc33d7'
-  // const dbotAddr = '0x7b91d26bc8ea5ad641c79c3932e5486e4066ff6b'
-  // const dbotAddr = '0x7476a1511d366ebc7309c23156b6bb9612fdd272'
-  // const dbotAddr = '0xdc008c9b99bbd0de276627613193cc5baa10c0ea'
-  // const dbotAddr = '0x6f8782bf3fc27dd1b31baf11064eedf2b6fc0811'
-  const dbotAddr = '0x8c0307c37b21984bdd5dced886d4aeeaeb877c14' //0x0ca4907b44d7c6c9de889536d26f18f848f175dc
+let web3 = new Web3()
+const account = web3.eth.accounts.decrypt(keystore, password)
+const atn = new Atn(account.privateKey)
 
 
-  const senderAddr = '0x6cd97bc621437e3bde6d682e9051eb80576ee035'
-
-  it('DbotFactory Method Test, AddAccount', function() {
-    console.log('=======================AddAccount Test Start=================================')
-    atn.setDefaultAccount(privateKey)
-    console.log('=======================AddAccount Test End=================================')
+describe('Atn Client NodeJS Test', function () {
+  describe('#getDbotName()', function () {
+    it('should return the dbot name on chain', async function () {
+      let name = await atn.getDbotName(Config.dbot.address)
+      assert.equal(name, DbotProfile.info.name)
+    })
   })
 
-
-  it('Account Method Test, Get Default Account', function() {
-    console.log('==========================Get Default Account Test Start==============================')
-    const account = atn.getDefaultAccount()
-    console.log('account:', account)
-    console.log('==========================Get Default Account Test End==============================')
+  describe('#getDbotDomain()', function () {
+    it('should return the dbot domain on chain', async function () {
+      let domain = await atn.getDbotDomain(Config.dbot.address)
+      assert.equal(domain, DbotProfile.info.domain)
+    })
   })
 
-  it('DbotFactory Method Test, Register', async function() {
-    this.timeout(10000)
-    var dbotAddress = '0x8c0307c37b21984bdd5dced886d4aeeaeb877c14'
-    console.log('==========================Register Test Start==============================')
-    var result = await atn.register(dbotAddress)
-    console.log('===========================================================================',result)
-    console.log('==========================Register Test End================================')
+  describe('#getPrice()', function () {
+    it('should return the price of endpoint in the dbot on chain', async function () {
+      DbotProfile.endpoints.forEach(async (ep) => {
+        let price = await atn.getPrice(Config.dbot.address, ep.uri, ep.method)
+        assert.equal(price, ep.price)
+      })
+    })
   })
 
-  //
-  // it(' Method ,OpenChannel ', async function() {
-  //   console.log('==========================OpenChannel Test Start==============================')
-  //   var receiveAddress = '0x8c0307c37b21984bdd5dced886d4aeeaeb877c14'
-  //   var value = 22000
-  //   var result = new Promise(resolve => atn.openChannel(receiveAddress, value))
-  //   result.then(function(value) {
-  //     console.log('==========================OpenChannel Test Result', value.transactionHash)
-  //   })
-  //   console.log('==========================OpenChannel Test Result2')
-  //   console.log('==========================OpenChannel Test End==============================')
-  // })
+  describe('#getChallengePeriod()', function () {
+    it('should return the challenge period of channel on chain', async function () {
+      let period = await atn.getChallengePeriod()
+      assert.equal(period, Config.channel.challengePeriod)
+    })
+  })
 
-  // it('Method CloseChannel', async function() {
-  //   console.log('==========================CloseChannel Test Start==============================')
-  //   var receiveAddress = dbotAddr
-  //   var blockNumber = 2999
-  //   var balance = 30
-  //   var result = new Promise(resolve => atn.closeChannel(receiveAddress, sendAddr, dbotAddr, blockNumber, balance))
-  //   result.then(function(value) {
-  //     console.log('==========================CloseChannel Test Result', value)
-  //   })
-  //   console.log('==========================CloseChannel Test End==============================')
-  // })
+  describe('#createChannel,#getChannelDeposit()', function () {
+    let deposit = DbotProfile.endpoints['0'].price * 10
+    it('create a new channel, should get the deposit', async function () {
+      this.timeout(15000)
+      let receipt = await atn.createChannel(Config.dbot.address, deposit)
+      // TODO how to assert tx success
+      let value = await atn.getChannelDeposit(Config.dbot.address)
+      assert.equal(value, deposit)
+    })
 
-  // it('Method Get Banlance Sign', async function() {
-  //   // receiverAddress, blockNumber, balance
-  //   var receiveAddress = '0x254046d709e89beecce17effe136f3f34a324be1'
-  //   var blockNumber = 25467
-  //   var balance = 20
-  //   var result = await atn.getBanlanceSign(receiveAddress, blockNumber, balance)
-  //   console.log('Banlance Sign ', result)
-  // })
+    it('should not create a new channel towards the same dbot', async function () {
+      this.timeout(15000)
+      try {
+        let receipt = await atn.createChannel(Config.dbot.address, deposit)
+      } catch (e) {
+        assert.equal(e.message, 'Channel has exist.')
+      }
+    })
+  })
 
+  describe('#getChannelDetail()', function () {
+    it('should return the detail of channel', async function () {
+      this.timeout(20000)
+      let receiverAddress = Config.dbot.address
+      let channelInfo = await atn._getChannelInfo(receiverAddress)
+      let channelDetail = await atn.getChannelDetail(receiverAddress)
 
-  // it('Method  getChannelInfo', async function() {
-  //   var senderAddress = senderAddr
-  //   var receiverAddress = dbotAddr
-  //   let blockNumber = 10
-  //   var result = atn.getChannelInfo(senderAddress, receiverAddress, blockNumber)
-  //   console.log('getChannelInfo', result)
-  //
-  // })
+      // make sure create channel has been synced by dbot server
+      let retryCnt = 3
+      while (channelDetail == undefined && retryCnt > 0) {
+          --retryCnt
+          console.log('ChannelCreated has not synced by dbot server, retry in 5s')
+          sleep.sleep(5)
+          channelDetail = await atn.getChannelDetail(receiverAddress)
+      }
 
+      assert(channelDetail != undefined)
+      assert.equal(channelInfo['deposit'], channelDetail['deposit'])
+      assert.equal(channelInfo['blockNumber'], channelDetail['open_block_number'])
+    })
+  })
 
-  // it('Method Topup', async function() {
-  //   var receiverAddress = dbotAddr
-  //   let blockNumber = 10
-  //   var result = atn.topUp(senderAddr, receiverAddress, blockNumber)
-  //   console.log('getChannelInfo', result)
-  // })
+  describe('#callDbotApi()', function () {
+    it('should return expected result', async function () {
+      let resp = await atn.callDbotApi(
+        Config.dbot.address,
+        DbotProfile.endpoints[0].uri,
+        DbotProfile.endpoints[0].method,
+        Config.dbot.axios,
+      )
+      assert.equal(resp.status, 200)
+    })
+  })
 
+  describe('#topUpChannel()', function () {
+    it('top up the created channel, should return new deposit', async function () {
+      this.timeout(15000)
+      const receiverAddress = Config.dbot.address
+      let info = await atn._getChannelInfo(receiverAddress)
+      let oldDeposit = info['deposit']
+      let topUpValue = oldDeposit
+      let receipt = await atn.topUpChannel(receiverAddress, topUpValue)
+      let newInfo = await atn._getChannelInfo(receiverAddress)
+      let newDeposit = new BigNumber(oldDeposit).plus(new BigNumber(topUpValue))
+      assert(newDeposit.eq(new BigNumber(newInfo['deposit'])))
+    })
+  })
 
-  // it('DbotFactory Method ,Demo AI CallAPI', async function() {
-  //   this.timeout(10000)
-  //   atn.setDefaultAccount(privateKey)
-  //   console.log('===================DbotFactory Method ,CallAI Test Start==========================')
-  //   var domain = 'localhost:5000'
-  //   var method = 'post'
-  //   // var uri = '/facepp/v3/detect'
-  //   // var receiverAddress = dbotAddr
-  //   var senderAddress = '0x6cD97BC621437E3BdE6D682E9051eb80576ee035'
-  //   const dbotAddress = '0x8c0307c37b21984bdd5dced886d4aeeaeb877c14'
-  //   var response = await axios.get(`http://${domain}/api/v1/dbots/${dbotAddress}/channels/${senderAddress}`)
-  //   // TODO should only one channel
-  //   let channelInfo = response.data[0]
-  //   console.log('Test ChannelInfo------------------------- ', channelInfo)
-  //   let data = {
-  //     'text': '百度是一家高科技公司'
-  //   }
-  //   var gbkBytes = iconv.encode(JSON.stringify(data), 'gbk')
-  //
-  //   // dbotAddress, method, uri, receiverAddress, senderAddress, blockNumber, balance, price, option
-  //   var option = {
-  //     headers: { 'Content-Type': 'application/json' },
-  //     responseEncoding: 'GBK',
-  //     method: method,
-  //     data: gbkBytes
-  //   }
-  //   console.log('params++++++++++++++++++++++++++', channelInfo['receiver'], channelInfo['open_block_number'], channelInfo['balance'] + price)
-  //   // var balanceSig = await atn.getBanlanceSign(channelInfo['receiver'], channelInfo['open_block_number'], channelInfo['balance'] + price)
-  //   // 0xcfaecdce8e0cb7829748a22384789b658bc00b6b6500f540aeb21285909d3c323d370aef18c3789145b9232c35055e5373bbb22214d03fce0c327a34cef8bab31b
-  //   // console.log('balanceSig  Test -------------', balanceSig)
-  //   // var result = atn.callAPI(dbotAddr, method, uri, option, channelInfo, price, balanceSig).then(function(response) {
-  //   //   console.log(response.data)
-  //   // }).catch(function(error) {
-  //   //   console.log(error)
-  //   // })
-  //
-  //   var result = atn.callAPI(dbotAddress, method, uri, option).then(function(response) {
-  //     console.log('Test result ----------------------', response.data)
-  //   }).catch(function(error) {
-  //     console.log(error)
-  //   })
-  //   console.log('result ================', result)
-  // })
-  //
-  // it('DbotFactory Method ,Baidu AI CallAPI', async function() {
-  //   this.timeout(10000)
-  //
-  //   atn.setDefaultAccount(privateKey)
-  //   console.log('===================DbotFactory Method ,CallAI Test Start==========================')
-  //   var domain = 'localhost:5000'
-  //   var method = 'post'
-  //   var uri = '/rpc/2.0/nlp/v1/lexer'
-  //   // var uri = '/facepp/v3/detect'
-  //   // var receiverAddress = dbotAddr
-  //   var senderAddress = '0x6cD97BC621437E3BdE6D682E9051eb80576ee035'
-  //   // var blockNumber = 135173
-  //   // var balance = 330
-  //   var price = 10
-  //   // facepp/v3/detect
-  //   const dbotAddress = '0x8c0307c37b21984bdd5dced886d4aeeaeb877c14'
-  //   var response = await axios.get(`http://${domain}/api/v1/dbots/${dbotAddress}/channels/${senderAddress}`)
-  //   // TODO should only one channel
-  //   let channelInfo = response.data[0]
-  //   console.log('Test ChannelInfo------------------------- ', channelInfo)
-  //   let data = {
-  //     'text': '百度是一家高科技公司'
-  //   }
-  //   var gbkBytes = iconv.encode(JSON.stringify(data), 'gbk')
-  //
-  //   // dbotAddress, method, uri, receiverAddress, senderAddress, blockNumber, balance, price, option
-  //   var option = {
-  //     headers: { 'Content-Type': 'application/json' },
-  //     responseEncoding: 'GBK',
-  //     method: method,
-  //     data: gbkBytes
-  //   }
-  //   console.log('params++++++++++++++++++++++++++', channelInfo['receiver'], channelInfo['open_block_number'], channelInfo['balance'] + price)
-  //   // var balanceSig = await atn.getBanlanceSign(channelInfo['receiver'], channelInfo['open_block_number'], channelInfo['balance'] + price)
-  //   // 0xcfaecdce8e0cb7829748a22384789b658bc00b6b6500f540aeb21285909d3c323d370aef18c3789145b9232c35055e5373bbb22214d03fce0c327a34cef8bab31b
-  //   // console.log('balanceSig  Test -------------', balanceSig)
-  //   // var result = atn.callAPI(dbotAddr, method, uri, option, channelInfo, price, balanceSig).then(function(response) {
-  //   //   console.log(response.data)
-  //   // }).catch(function(error) {
-  //   //   console.log(error)
-  //   // })
-  //
-  //   var result = atn.callAPI(dbotAddress, method, uri, option).then(function(response) {
-  //     console.log('Test result ----------------------', response.data)
-  //   }).catch(function(error) {
-  //     console.log(error)
-  //   })
-  //   console.log('result ================', result)
-  // })
+  describe('#requestCloseSignature(),#closeChannel()', function () {
 
+    it('should close channel success', async function () {
+      this.timeout(30000)
 
+      const receiverAddress = Config.dbot.address
+      let channelInfo = await atn._getChannelInfo(receiverAddress)
+      let channelDetail = await atn.getChannelDetail(receiverAddress)
 
+      //make sure top up has been synced by dbot server
+      let retryCnt = 3
+      while (channelDetail.deposit != channelInfo.deposit && retryCnt > 0) {
+          --retryCnt
+          console.log('ChannelToppedUp up has not synced by dbot server, retry in 5s')
+          sleep.sleep(5)
+          channelDetail = await atn.getChannelDetail(receiverAddress)
+      }
 
-  // it('DbotFactory Method ,CallAI', async function() {
-  //   this.timeout(10000)
-  //   console.log('===================DbotFactory Method ,CallAI==========================')
-  //   // var dbotAddress = '0x23ec269f4f76145e97303cb6236e21b7c9df5e9d'
-  //   var domain = 'localhost:5000'
-  //   var method = 'post'
-  //   var uri = '/rpc/2.0/nlp/v1/lexer'
-  //   // var receiverAddress = dbotAddr
-  //   var senderAddress = '0x6cd97bc621437e3bde6d682e9051eb80576ee035'
-  //   var price = 10
-  //   var response = await axios.get(
-  //     `http://${domain}/api/v1/dbots/${dbotAddr}/channels/${senderAddress}`)
-  //   // TODO should only one channel
-  //   channelInfo = response.data[0]
-  //   let data = {
-  //     "text": "百度是一家高科技公司"
-  //   }
-  //   var gbkBytes = iconv.encode(JSON.stringify(data),'gbk');
-  //   // dbotAddress, method, uri, receiverAddress, senderAddress, blockNumber, balance, price, option
-  //   var option = {
-  //     headers: { 'Content-Type': 'application/json'},
-  //     responseEncoding: 'GBK',
-  //     method: method,
-  //     data: gbkBytes
-  //   }
-  //   var balanceSig = await atn.getBanlanceSign(channelInfo['receiver'], channelInfo['open_block_number'], channelInfo['balance'] + price)
-  //   atn.newCallAI(dbotAddr, method, uri, option, channelInfo, price, balanceSig).then(function(response) {
-  //     console.log(response.data)
-  //   }).catch(function(error) {
-  //     console.log(error)
-  //   })
-  //   return
-  //   // var result = atn.newCallAI(dbotAddr, method, uri, receiverAddress, senderAddress, blockNumber, balance, price, option)
-  //   console.log('result ================', result)
-  // })
+      assert.equal(channelDetail.deposit, channelInfo.deposit)
+      let detail = await atn.getChannelDetail(receiverAddress)
+      let closeSig = await atn.requestCloseSignature(receiverAddress, detail['balance'])
+      let receipt = await atn.closeChannel(receiverAddress, channelDetail.balance, closeSig)
+      //TODO check tx is success, blance check after close channel
+      console.log(receipt)
 
+    })
 
+  })
 })

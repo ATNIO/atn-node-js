@@ -195,7 +195,12 @@
         }
       ],
       "name": "withdraw",
-      "outputs": [],
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
       "payable": false,
       "stateMutability": "nonpayable",
       "type": "function"
@@ -466,12 +471,7 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "name": "_challengePeriod",
-          "type": "uint32"
-        }
-      ],
+      "inputs": [],
       "payable": false,
       "stateMutability": "nonpayable",
       "type": "constructor"

@@ -1,0 +1,30 @@
+{
+    "info": {
+        "name": "百度NLP词法分析", 
+        "domain": "localhost:5000",
+        "description": "词法分析接口：向用户提供分词、词性标注、专名识别三大功能；能够识别出文本串中的基本词汇（分词），对这些词汇进行重组、标注组合后词汇的词性，并进一步识别出命名实体",
+        "logo": "https://www.baidu.com/img/bd_logo1.png",
+        "category": "nlp",
+        "tags": [
+            "AI",
+            "technology"
+        ]
+    },
+    "endpoints": [
+        {
+            "uri": "/lexer",
+            "path": "/rpc/2.0/nlp/v1/lexer",
+            "method": "post",
+            "price": 1000000000000000
+        }
+    ],
+    "specification": {
+        "type": "swagger",
+        "format": "json",
+        "file": "nlp_context_keyword_swagger.json" 
+    },
+    "middleware": {
+        "module": "nlp_context_keyword_middleware",
+        "class": "AccessToken"
+    }
+}

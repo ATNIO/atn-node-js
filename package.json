@@ -36,6 +36,7 @@
     "mocha": "^5.2.0",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
+    "sleep": "^5.2.3",
     "t": "^0.5.1",
     "web3": "^1.0.0-beta.34",
     "websocket": "^1.0.26",
