@@ -5,28 +5,40 @@ let assert = require('assert');
 let sleep = require('sleep')
 
 let Atn = require('../src/atn')
-const Config = require('./config.json')
-const DbotProfile = require(Config.dbot.profile)
+let DBot = require('../src/contracts/dbot/dbot.json')
 
+// -------------------------------------------
+// Modify following lines before run test
+const http_provider = 'http://0.0.0.0:8545'
+const dbotAddress = '0x0000000000000000000000000000000000000000'
+const dbotConfigPath = './profiles/baidu/nlp/'
 const keystore = require('./accounts/node01/keystore/UTC--2018-06-19T08-46-57.628797023Z--845c0aaba0dabd59115c0601b429e23ec713cc80')
 const password = 'passwd'
+// -------------------------------------------
 
-let web3 = new Web3()
+let web3 = new Web3(http_provider)
+const Config = require(dbotConfigPath + 'config.js')
+const DbotProfile = require(dbotConfigPath + Config.dbot.profile)
 const account = web3.eth.accounts.decrypt(keystore, password)
-const atn = new Atn(account.privateKey)
+const atn = new Atn(account.privateKey, http_provider)
 
+if (web3.eth.getCode(dbotAddress) != DBot.bytecode) {
+  console.error('The dbotAddress is not address of a DBot, set it before run test')
+  return
+}
 
 describe('Atn Client NodeJS Test', function () {
+
   describe('#getDbotName()', function () {
     it('should return the dbot name on chain', async function () {
-      let name = await atn.getDbotName(Config.dbot.address)
+      let name = await atn.getDbotName(dbotAddress)
       assert.equal(name, DbotProfile.info.name)
     })
   })
 
   describe('#getDbotDomain()', function () {
     it('should return the dbot domain on chain', async function () {
-      let domain = await atn.getDbotDomain(Config.dbot.address)
+      let domain = await atn.getDbotDomain(dbotAddress)
       assert.equal(domain, DbotProfile.info.domain)
     })
   })
@@ -34,7 +46,7 @@ describe('Atn Client NodeJS Test', function () {
   describe('#getPrice()', function () {
     it('should return the price of endpoint in the dbot on chain', async function () {
       DbotProfile.endpoints.forEach(async (ep) => {
-        let price = await atn.getPrice(Config.dbot.address, ep.uri, ep.method)
+        let price = await atn.getPrice(dbotAddress, ep.uri, ep.method)
         assert.equal(price, ep.price)
       })
     })
@@ -50,17 +62,17 @@ describe('Atn Client NodeJS Test', function () {
   describe('#createChannel,#getChannelDeposit()', function () {
     let deposit = DbotProfile.endpoints['0'].price * 10
     it('create a new channel, should get the deposit', async function () {
-      this.timeout(15000)
-      let receipt = await atn.createChannel(Config.dbot.address, deposit)
+      this.timeout(20000)
+      let receipt = await atn.createChannel(dbotAddress, deposit)
       // TODO how to assert tx success
-      let value = await atn.getChannelDeposit(Config.dbot.address)
+      let value = await atn.getChannelDeposit(dbotAddress)
       assert.equal(value, deposit)
     })
 
     it('should not create a new channel towards the same dbot', async function () {
-      this.timeout(15000)
+      this.timeout(20000)
       try {
-        let receipt = await atn.createChannel(Config.dbot.address, deposit)
+        let receipt = await atn.createChannel(dbotAddress, deposit)
       } catch (e) {
         assert.equal(e.message, 'Channel has exist.')
       }
@@ -69,13 +81,13 @@ describe('Atn Client NodeJS Test', function () {
 
   describe('#getChannelDetail()', function () {
     it('should return the detail of channel', async function () {
-      this.timeout(20000)
-      let receiverAddress = Config.dbot.address
+      this.timeout(30000)
+      let receiverAddress = dbotAddress
       let channelInfo = await atn._getChannelInfo(receiverAddress)
       let channelDetail = await atn.getChannelDetail(receiverAddress)
 
       // make sure create channel has been synced by dbot server
-      let retryCnt = 3
+      let retryCnt = 4
       while (channelDetail == undefined && retryCnt > 0) {
           --retryCnt
           console.log('ChannelCreated has not synced by dbot server, retry in 5s')
@@ -92,19 +104,20 @@ describe('Atn Client NodeJS Test', function () {
   describe('#callDbotApi()', function () {
     it('should return expected result', async function () {
       let resp = await atn.callDbotApi(
-        Config.dbot.address,
+        dbotAddress,
         DbotProfile.endpoints[0].uri,
         DbotProfile.endpoints[0].method,
         Config.dbot.axios,
       )
       assert.equal(resp.status, 200)
+      console.log(resp.data)
     })
   })
 
   describe('#topUpChannel()', function () {
     it('top up the created channel, should return new deposit', async function () {
-      this.timeout(15000)
-      const receiverAddress = Config.dbot.address
+      this.timeout(30000)
+      const receiverAddress = dbotAddress
       let info = await atn._getChannelInfo(receiverAddress)
       let oldDeposit = info['deposit']
       let topUpValue = oldDeposit
@@ -118,9 +131,9 @@ describe('Atn Client NodeJS Test', function () {
   describe('#requestCloseSignature(),#closeChannel()', function () {
 
     it('should close channel success', async function () {
-      this.timeout(30000)
+      this.timeout(40000)
 
-      const receiverAddress = Config.dbot.address
+      const receiverAddress = dbotAddress
       let channelInfo = await atn._getChannelInfo(receiverAddress)
       let channelDetail = await atn.getChannelDetail(receiverAddress)
 

@@ -4,7 +4,7 @@
         "domain": "localhost:5000",
         "description": "Speech synthesis DBot from [xfyun](https://www.xfyun.cn/).",
         "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWxsTxF3PS5Xz8SuMuukyZU6jVDikZIucjqEGchB2kgJTGLC04",
-        "category": "voice",
+        "category": "speechSynthesis",
         "tags": [
             "AI",
             "technology"

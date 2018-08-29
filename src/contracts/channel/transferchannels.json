@@ -98,20 +98,6 @@
       "type": "function"
     },
     {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_trusted_contracts",
-          "type": "address[]"
-        }
-      ],
-      "name": "removeTrustedContracts",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
       "constant": true,
       "inputs": [
         {
@@ -128,24 +114,6 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_sender_address",
-          "type": "address"
-        },
-        {
-          "name": "_receiver_address",
-          "type": "address"
-        }
-      ],
-      "name": "createChannelDelegate",
-      "outputs": [],
-      "payable": true,
-      "stateMutability": "payable",
       "type": "function"
     },
     {
@@ -357,53 +325,6 @@
       "type": "function"
     },
     {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_trusted_contracts",
-          "type": "address[]"
-        }
-      ],
-      "name": "addTrustedContracts",
-      "outputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "ownerAddress",
-      "outputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "trusted_contracts",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "constant": true,
       "inputs": [
         {
@@ -435,28 +356,6 @@
       "type": "function"
     },
     {
-      "constant": false,
-      "inputs": [
-        {
-          "name": "_sender_address",
-          "type": "address"
-        },
-        {
-          "name": "_receiver_address",
-          "type": "address"
-        },
-        {
-          "name": "_open_block_number",
-          "type": "uint32"
-        }
-      ],
-      "name": "topUpDelegate",
-      "outputs": [],
-      "payable": true,
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
       "constant": true,
       "inputs": [],
       "name": "challengePeriod",
@@ -469,12 +368,6 @@
       "payable": false,
       "stateMutability": "view",
       "type": "function"
-    },
-    {
-      "inputs": [],
-      "payable": false,
-      "stateMutability": "nonpayable",
-      "type": "constructor"
     },
     {
       "anonymous": false,
@@ -609,23 +502,6 @@
         }
       ],
       "name": "ChannelWithdraw",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "name": "_trusted_contract_address",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "name": "_trusted_status",
-          "type": "bool"
-        }
-      ],
-      "name": "TrustedContract",
       "type": "event"
     }
   ]
