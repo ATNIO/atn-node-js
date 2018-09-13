@@ -1,7 +1,7 @@
 {
   "name": "atn-node-js",
-  "version": "0.0.3-alpha",
-  "description": "a light client lib for Dbot",
+  "version": "0.0.1",
+  "description": "a light client node js lib for Dbot",
   "main": "index.js",
   "scripts": {
     "test": "mocha --timeout 5000"

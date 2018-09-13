@@ -13,14 +13,14 @@ const MockBlockNumber = 1   // mock block number for send tx to channelContract
 const TransferChannelAddress = "0x0000000000000000000000000000000000000012"
 
 class Atn {
-  constructor(private_key, rpc_provider='http://0.0.0.0:8545') {
+  constructor(private_key, rpc_provider='https://rpc-test.atnio.net') {
     this.web3 = new Web3(rpc_provider)
     this.account = this.web3.eth.accounts.privateKeyToAccount(private_key)
     // this.web3.eth.accounts.wallet.add(this.account)
     this.channelContract = new this.web3.eth.Contract(TransferChannelJson.abi, TransferChannelAddress)
   }
 
-  _getBalanceProofData(receiverAddress, balance) {
+  getBalanceProofData(receiverAddress, balance) {
     return [
       {
         type: 'string',
@@ -45,7 +45,7 @@ class Atn {
     ]
   }
 
-  _signMessage(hash) {
+  signMessage(hash) {
     let hashNoHex = Buffer.from(hash.slice(2), 'hex')
     let privateKey = Buffer.from(this.account.privateKey.slice(2), 'hex')
     const rsv = ethUtil.ecsign(hashNoHex, privateKey)
@@ -60,8 +60,8 @@ class Atn {
     return signMsg
   }
 
-  _signBalanceProof(receiverAddress, balance) {
-    const data = this._getBalanceProofData(receiverAddress, balance)
+  signBalanceProof(receiverAddress, balance) {
+    const data = this.getBalanceProofData(receiverAddress, balance)
     const hash = EthSignUtil.typedSignatureHash(data)
     return this._signMessage(hash)
   }
@@ -89,7 +89,7 @@ class Atn {
   }
 
   // get channel info
-  async _getChannelInfo(receiverAddress) {
+  async getChannelInfo(receiverAddress) {
     let key = await this.channelContract.methods.getKey(this.account.address, receiverAddress, MockBlockNumber).call()
     let channel = await this.channelContract.methods.channels(key).call()
     let info = {
@@ -187,13 +187,13 @@ class Atn {
     return this.callApi(dbotAddress, domain, uri, method, option, balance, blockNumber)
   }
 
-  async callApi(dbotAddress, domain, uri, method, option, balance, blockNumber) {
+  async callAPI(dbotAddress, domain, uri, method, option, balance, blockNumber) {
     option.url = `http://${domain}/call/${dbotAddress}${uri}`
     option.method = method
     if (option.headers == undefined || option.headers == null) {
       option.headers = {}
     }
-    let balanceSignature = this._signBalanceProof(dbotAddress, balance)
+    let balanceSignature = this.signBalanceProof(dbotAddress, balance)
     option.headers.RDN_balance = balance
     option.headers.RDN_balance_signature = balanceSignature
     option.headers.RDN_sender_address = this.account.address
@@ -203,11 +203,7 @@ class Atn {
     try {
       return await axios(option)
     } catch (e) {
-      if (e.response.status === 402) {
-        console.log('Get 402 response', e.response.headers)
-        // TODO custom error for this case
-        throw new Error('Payment Required.')
-      }
+
       console.error(e.response.data)
       throw e
     }
