@@ -4,7 +4,7 @@ let BigNumber =require('bignumber.js')
 let assert = require('assert');
 let sleep = require('sleep')
 
-let Atn = require('../src/atn')
+const Atn = require('../src/atn')
 let DBot = require('../src/contracts/dbot/dbot.json')
 
 // -------------------------------------------

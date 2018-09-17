@@ -25,4 +25,4 @@ function unlockAccountsIfNeeded(accounts, passwords, unlock_duration_sec) {
   }
 }
 
-export { isAccountLocked, unlockAccountsIfNeeded }
+export {isAccountLocked, unlockAccountsIfNeeded}

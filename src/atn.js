@@ -2,48 +2,35 @@ let axios = require('axios')
 let Web3 = require('web3')
 let EthSignUtil = require('eth-sig-util')
 let ethUtil = require('ethereumjs-util')
-let BigNumber =require('bignumber.js')
+let BigNumber = require('bignumber.js')
 let Buffer = require('safe-buffer').Buffer
-
 let sendTx = require('./sendTx')
+
+
 const DbotJson = require('./contracts/dbot/dbot.json')
 const DbotFactoryJson = require('./contracts/dbot/dbotFactory.json')
 const TransferChannelJson = require('./contracts/channel/transferChannels.json')
-const MockBlockNumber = 1   // mock block number for send tx to channelContract
-const TransferChannelAddress = "0x0000000000000000000000000000000000000012"
+const MockBlockNumber = 1
 
 class Atn {
-  constructor(private_key, rpc_provider='https://rpc-test.atnio.net') {
+
+
+  transferChannelAddress = "0x0000000000000000000000000000000000000012"
+
+  /**
+   * @method constructor method
+   * @descri This method
+   *
+   * @param private_key
+   * @param rpc_provider
+   */
+  constructor(private_key, rpc_provider = 'https://rpc-test.atnio.net') {
     this.web3 = new Web3(rpc_provider)
     this.account = this.web3.eth.accounts.privateKeyToAccount(private_key)
     // this.web3.eth.accounts.wallet.add(this.account)
     this.channelContract = new this.web3.eth.Contract(TransferChannelJson.abi, TransferChannelAddress)
   }
 
-  getBalanceProofData(receiverAddress, balance) {
-    return [
-      {
-        type: 'string',
-        name: 'message_id',
-        value: 'Sender balance proof signature'
-      },
-      {
-        type: 'address',
-        name: 'receiver',
-        value: receiverAddress
-      },
-      {
-        type: 'uint256',
-        name: 'balance',
-        value: balance.toString()
-      },
-      {
-        type: 'address',
-        name: 'contract',
-        value: TransferChannelAddress
-      }
-    ]
-  }
 
   signMessage(hash) {
     let hashNoHex = Buffer.from(hash.slice(2), 'hex')
@@ -63,7 +50,12 @@ class Atn {
   signBalanceProof(receiverAddress, balance) {
     const data = this.getBalanceProofData(receiverAddress, balance)
     const hash = EthSignUtil.typedSignatureHash(data)
-    return this._signMessage(hash)
+    return this.signMessage(hash)
+  }
+
+
+  async addAccount(privateKey) {
+    return this.web3.eth.accounts.privateKeyToAccount(privateKey);
   }
 
   async getDbotName(dbotAddress) {
@@ -88,6 +80,7 @@ class Atn {
     return peroid
   }
 
+
   // get channel info
   async getChannelInfo(receiverAddress) {
     let key = await this.channelContract.methods.getKey(this.account.address, receiverAddress, MockBlockNumber).call()
@@ -108,10 +101,10 @@ class Atn {
   async getChannelDetail(receiverAddress) {
     let dbotAddress = receiverAddress
     let domain = await this.getDbotDomain(dbotAddress)
-    let url = `http://${domain}/api/v1/dbots/${dbotAddress}/channels/${this.account.address}`
+    let url = `https://${domain}/api/v1/dbots/${dbotAddress}/channels/${this.account.address}`
     try {
       let res = await axios.get(url)
-      if(res.data.length > 0) {
+      if (res.data.length > 0) {
         // channel contract ensure only one channel is allowed.
         let channelDetail = res.data[0]
         channelDetail.domain = domain
@@ -130,10 +123,10 @@ class Atn {
     let detail = await this.getChannelDetail(dbotAddress)
     let block_number = detail.open_block_number
     // console.log(block_number)
-    const URL = `http://${detail.domain}/api/v1/dbots/${dbotAddress}/channels/${this.account.address}/${detail.open_block_number}`
+    const URL = `https://${detail.domain}/api/v1/dbots/${dbotAddress}/channels/${this.account.address}/${detail.open_block_number}`
     console.log('Get close signature from dbot server for cooperative close channel')
     try {
-      let resp = await axios.delete(URL, { params: { balance: balance } })
+      let resp = await axios.delete(URL, {params: {balance: balance}})
       if (resp.status == 200) {
         let closeSignature = resp.data.close_signature
         console.log('closeSignature is : ', closeSignature)
@@ -188,7 +181,7 @@ class Atn {
   }
 
   async callAPI(dbotAddress, domain, uri, method, option, balance, blockNumber) {
-    option.url = `http://${domain}/call/${dbotAddress}${uri}`
+    option.url = `https://${domain}/call/${dbotAddress}${uri}`
     option.method = method
     if (option.headers == undefined || option.headers == null) {
       option.headers = {}
@@ -208,6 +201,33 @@ class Atn {
       throw e
     }
   }
+
+  getBalanceProofData(receiverAddress, balance) {
+    return [
+      {
+        type: 'string',
+        name: 'message_id',
+        value: 'Sender balance proof signature'
+      },
+      {
+        type: 'address',
+        name: 'receiver',
+        value: receiverAddress
+      },
+      {
+        type: 'uint256',
+        name: 'balance',
+        value: balance.toString()
+      },
+      {
+        type: 'address',
+        name: 'contract',
+        value: TransferChannelAddress
+      }
+    ]
+  }
+
+
 }
 
 module.exports = Atn

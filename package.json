@@ -1,6 +1,6 @@
 {
   "name": "atn-node-js",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "a light client node js lib for Dbot",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,7 @@
   "author": "ATNIO",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ATNIO/atn-node-js.git"
+    "url": "git+https://github.com/ATNIO/atn-node-js.git"
   },
   "bugs": {
     "url": "https://github.com/ATNIO/atn-node-js/issues",
@@ -38,10 +38,12 @@
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "sleep": "^5.2.3",
-    "t": "^0.5.1",
     "web3": "^1.0.0-beta.34",
     "websocket": "^1.0.26",
     "whatwg-encoding": "^1.0.3"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "directories": {
+    "test": "test"
+  }
 }

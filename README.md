@@ -2,7 +2,7 @@ natn-js is for building browser AIapps & NodeJS services that interact with ATN 
 
 ![atn-js architecture](https://github.com/ATNIO/AI_market_plan/blob/master/images/ATN-JS.svg)
 
-### TODO LIST
+### This JS Client contains the following methods
 
 - [ ] getDbotCount
 - [ ] getDbotInfo
