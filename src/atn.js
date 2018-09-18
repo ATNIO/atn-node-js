@@ -11,11 +11,12 @@ const DbotJson = require('./contracts/dbot/dbot.json')
 const DbotFactoryJson = require('./contracts/dbot/dbotFactory.json')
 const TransferChannelJson = require('./contracts/channel/transferChannels.json')
 const MockBlockNumber = 1
+const transferChannelAddress = "0x0000000000000000000000000000000000000012";
 
 class Atn {
 
 
-  transferChannelAddress = "0x0000000000000000000000000000000000000012"
+
 
   /**
    * @method constructor method
@@ -28,7 +29,7 @@ class Atn {
     this.web3 = new Web3(rpc_provider)
     this.account = this.web3.eth.accounts.privateKeyToAccount(private_key)
     // this.web3.eth.accounts.wallet.add(this.account)
-    this.channelContract = new this.web3.eth.Contract(TransferChannelJson.abi, TransferChannelAddress)
+    this.channelContract = new this.web3.eth.Contract(TransferChannelJson.abi, transferChannelAddress)
   }
 
 
@@ -94,7 +95,7 @@ class Atn {
   }
 
   async getChannelDeposit(receiverAddress) {
-    let info = await this._getChannelInfo(receiverAddress)
+    let info = await this.getChannelInfo(receiverAddress)
     return info['deposit']
   }
 
@@ -143,7 +144,7 @@ class Atn {
 
   async createChannel(receiverAddress, deposit) {
     // Check if a channel is exist
-    let info = await this._getChannelInfo(receiverAddress)
+    let info = await this.getChannelInfo(receiverAddress)
     if (info['deposit'] != 0 || info['blockNumber'] != 0) {
       throw new Error('Channel has exist.')
     }
@@ -155,7 +156,7 @@ class Atn {
   }
 
   async closeChannel(receiverAddress, balance, closeSignature) {
-    let balanceSignature = this._signBalanceProof(receiverAddress, balance)
+    let balanceSignature = this.signBalanceProof(receiverAddress, balance)
     return sendTx(this.web3, this.account, this.channelContract,
       'cooperativeClose(address,uint32,uint256,bytes,bytes)',
       [receiverAddress, MockBlockNumber, balance, balanceSignature, closeSignature])
@@ -177,7 +178,7 @@ class Atn {
     let remainBalance = new BigNumber(channelDetail['balance'])
     let balance = remainBalance.plus(new BigNumber(price)).toString()
     let blockNumber = channelDetail['open_block_number']
-    return this.callApi(dbotAddress, domain, uri, method, option, balance, blockNumber)
+    return this.callAPI(dbotAddress, domain, uri, method, option, balance, blockNumber)
   }
 
   async callAPI(dbotAddress, domain, uri, method, option, balance, blockNumber) {
@@ -222,7 +223,7 @@ class Atn {
       {
         type: 'address',
         name: 'contract',
-        value: TransferChannelAddress
+        value: transferChannelAddress
       }
     ]
   }

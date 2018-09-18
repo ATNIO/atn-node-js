@@ -83,7 +83,7 @@ describe('Atn Client NodeJS Test', function () {
     it('should return the detail of channel', async function () {
       this.timeout(30000)
       let receiverAddress = dbotAddress
-      let channelInfo = await atn._getChannelInfo(receiverAddress)
+      let channelInfo = await atn.getChannelInfo(receiverAddress)
       let channelDetail = await atn.getChannelDetail(receiverAddress)
 
       // make sure create channel has been synced by dbot server
@@ -122,7 +122,7 @@ describe('Atn Client NodeJS Test', function () {
       let oldDeposit = info['deposit']
       let topUpValue = oldDeposit
       let receipt = await atn.topUpChannel(receiverAddress, topUpValue)
-      let newInfo = await atn._getChannelInfo(receiverAddress)
+      let newInfo = await atn.getChannelInfo(receiverAddress)
       let newDeposit = new BigNumber(oldDeposit).plus(new BigNumber(topUpValue))
       assert(newDeposit.eq(new BigNumber(newInfo['deposit'])))
     })
@@ -134,7 +134,7 @@ describe('Atn Client NodeJS Test', function () {
       this.timeout(40000)
 
       const receiverAddress = dbotAddress
-      let channelInfo = await atn._getChannelInfo(receiverAddress)
+      let channelInfo = await atn.getChannelInfo(receiverAddress)
       let channelDetail = await atn.getChannelDetail(receiverAddress)
 
       //make sure top up has been synced by dbot server
