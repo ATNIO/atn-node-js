@@ -1,5 +1,5 @@
 /.vscode/
-/src/
+/test/
 .babelrc
 .prettierignore
 .prettierrc
