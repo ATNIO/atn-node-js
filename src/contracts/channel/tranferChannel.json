@@ -1,6 +1,6 @@
 {
-  "name": "transferchannels_contract",
-  "abi": [
+  "name":"",
+  "abi":[
     {
       "constant": true,
       "inputs": [
