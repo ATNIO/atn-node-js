@@ -1,5 +1,5 @@
 {
-  "name":"",
+  "name":"transfer_channel",
   "abi":[
     {
       "constant": true,

@@ -9,7 +9,7 @@ let sendTx = require('./sendTx')
 
 const DbotJson = require('./contracts/dbot/dbot.json')
 const DbotFactoryJson = require('./contracts/dbot/dbotFactory.json')
-const TransferChannelJson = require('./contracts/channel/transferChannels.json')
+const TransferChannelJson = require('./contracts/channel/transferChannel.json')
 const MockBlockNumber = 1
 const transferChannelAddress = "0x0000000000000000000000000000000000000012";
 
