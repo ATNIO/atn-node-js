@@ -33,6 +33,10 @@ class Atn {
   }
 
 
+  async privateKeyToAccount(privateKey) {
+    return this.web3.eth.accounts.privateKeyToAccount(privateKey);
+  }
+
   signMessage(hash) {
     let hashNoHex = Buffer.from(hash.slice(2), 'hex')
     let privateKey = Buffer.from(this.account.privateKey.slice(2), 'hex')
