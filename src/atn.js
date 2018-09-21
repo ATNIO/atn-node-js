@@ -5,17 +5,14 @@ let ethUtil = require('ethereumjs-util')
 let BigNumber = require('bignumber.js')
 let Buffer = require('safe-buffer').Buffer
 let sendTx = require('./sendTx')
-
-
+let accountTool = require('./tools/account')
 const DbotJson = require('./contracts/dbot/dbot.json')
-const DbotFactoryJson = require('./contracts/dbot/dbotFactory.json')
 const TransferChannelJson = require('./contracts/channel/transferChannel.json')
 const MockBlockNumber = 1
 const transferChannelAddress = "0x0000000000000000000000000000000000000012";
 
+
 class Atn {
-
-
 
 
   /**
@@ -25,11 +22,61 @@ class Atn {
    * @param private_key
    * @param rpc_provider
    */
-  constructor(private_key, rpc_provider = 'https://rpc-test.atnio.net') {
+  constructor(private_key,rpc_provider = 'https://rpc-test.atnio.net', env = 'prod') {
     this.web3 = new Web3(rpc_provider)
     this.account = this.web3.eth.accounts.privateKeyToAccount(private_key)
     // this.web3.eth.accounts.wallet.add(this.account)
     this.channelContract = new this.web3.eth.Contract(TransferChannelJson.abi, transferChannelAddress)
+    if (env && typeof env === 'string' && env.toLowerCase() !== this.PRODUCT_ENV) {
+      this.hyperProtocolType = 'https'
+    } else {
+      this.hyperProtocolType = 'http'
+    }
+  }
+
+
+  async unlockAccountsIfNeeded(account, password, unlock_duration_sec) {
+    accountTool.unlockSingleAccountIfNeeded(account, password, unlock_duration_sec)
+  }
+
+
+
+  getHyperProtocolType(){
+    return this.hyperProtocolType
+  }
+  /**
+   * web3.eth.accounts.create([entropy]);
+   * @returns {Promise<Account>}
+   */
+  async createAccount() {
+    return web3.eth.accounts.create();
+  }
+
+  /**
+   * 创建账号，获取 private_key 可选
+   * @param private_key
+   * @returns {Promise<*>}
+   */
+  async initAccount(...private_key) {
+    if (private_key) {
+      console.log('------------init Channel private key-------------', private_key)
+      let accountObj = await this.privateKeyToAccount(private_key)
+      if (!accountObj) {
+        return accountObj
+      } else {
+        throw new Error('no account on chain')
+      }
+    } else {
+      let password = this.web3.utils.randomHex(32)
+      return await this.web3.eth.accounts.create(password);
+    }
+  }
+
+
+  async initChannel(dbotAddress, private_key) {
+    if (private_key === undefined) {
+
+    }
   }
 
 
@@ -106,7 +153,9 @@ class Atn {
   async getChannelDetail(receiverAddress) {
     let dbotAddress = receiverAddress
     let domain = await this.getDbotDomain(dbotAddress)
-    let url = `https://${domain}/api/v1/dbots/${dbotAddress}/channels/${this.account.address}`
+    const httpHeader = domain.toLowerCase().startsWith('http') ? domain :this.getHyperProtocolType.concat('://').concat(domain)
+    let url = `${httpHeader}/api/v1/dbots/${dbotAddress}/channels/${this.account.address}`
+    console.log('-----------getChannelDetail-----------',url)
     try {
       let res = await axios.get(url)
       if (res.data.length > 0) {
@@ -128,8 +177,10 @@ class Atn {
     let detail = await this.getChannelDetail(dbotAddress)
     let block_number = detail.open_block_number
     // console.log(block_number)
-    const URL = `https://${detail.domain}/api/v1/dbots/${dbotAddress}/channels/${this.account.address}/${detail.open_block_number}`
-    console.log('Get close signature from dbot server for cooperative close channel')
+    // https://${detail.domain}
+    const httpHeader = detail.domain.toLowerCase().startsWith('http') ? domain :this.getHyperProtocolType.concat('://').concat(domain)
+    const URL = `${httpHeader}/api/v1/dbots/${dbotAddress}/channels/${this.account.address}/${detail.open_block_number}`
+    console.log('-----------getChannelDetail-----------',URL)
     try {
       let resp = await axios.delete(URL, {params: {balance: balance}})
       if (resp.status == 200) {
@@ -186,7 +237,7 @@ class Atn {
   }
 
   async callAPI(dbotAddress, domain, uri, method, option, balance, blockNumber) {
-    option.url = `https://${domain}/call/${dbotAddress}${uri}`
+    option.url = `${this.handlerDbotDomain(domain, this.hyperProtocolType)}/call/${dbotAddress}${uri}`
     option.method = method
     if (option.headers == undefined || option.headers == null) {
       option.headers = {}
