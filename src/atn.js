@@ -155,9 +155,11 @@ class Atn {
    * @param private_key
    * @returns {Promise<*>}
    */
-  async initChannel(dbotAddress, private_key, times ) {
+  async initConfig(dbotAddress, private_key, times) {
     let account
+    //1. 将私钥转换为账户
     if (private_key === undefined) {
+      //如果没有私钥则创建账户
       account = await this.createAccount()
     } else {
       account = this.initAccount(private_key)
