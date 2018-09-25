@@ -17,7 +17,7 @@
 -  调用**DBotServer AI**服务：callDBotAI(dbotAddress, uri, method, option)
 
 ### 快速开始   
-&emsp;&emsp;我们精心准备了一个简单的示例:`atn-client-example`([项目地址](https://github.com/ATNIO/atn-client-example))方便你快速开发使用 **atn-node-js**
+&emsp;&emsp;我们精心准备了一个简单的示例：`atn-client-example`([项目地址](https://github.com/ATNIO/atn-client-example))方便你快速开发使用 **atn-node-js**
  
 #### 1. `AI Market` 上查询想要使用的AI服务 
    🔗[AI Market地址](https://market-test.atnio.net)  
