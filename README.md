@@ -1,5 +1,5 @@
 # atn-node-js 
-atn-node-js is for building browser AIapps & NodeJS services that interact with ATN Network.
+atn-node-js is for building npm AIapps & NodeJS services that interact with ATN Network.
 
 ![atn-node-js architecture](https://github.com/ATNIO/AI_market_plan/blob/master/images/ATN-JS.svg)
 
@@ -16,12 +16,11 @@ atn-node-js is for building browser AIapps & NodeJS services that interact with 
 -  关闭AI调用通道：closeChannel(receiverAddress, balance, closeSignature)
 -  调用DBotServer AI服务：callDBotAI(dbotAddress, uri, method, option)
 
-### 快速起步   
+### 快速开始  
 
-
-
+我们精心准备了一个简单的示例:[atn-client-example](https://github.com/ATNIO/atn-client-example)方便你快速开发使用**atn-node-js**
  
-1. `AI Market` 上查询想要使用的AI服务：(AI Market🔗)[https://market-test.atnio.net]  
+1. `AI Market` 上查询想要使用的AI服务：🔗[https://market-test.atnio.net]  
    例如：
    ```javascript
    dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303"
@@ -85,7 +84,7 @@ atn-node-js is for building browser AIapps & NodeJS services that interact with 
    const result = await atn.getChannelDetail(dbotAddress);
    ``` 
    
-   STEP 3：调用指定地址的DBotServer服务
+   STEP 3：调用指定地址的DBotServer AI服务
    ```javascript
    //1. 引入 atn-node-js 包
    var Atn = require('atn-node-js');
