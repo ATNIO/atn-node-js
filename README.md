@@ -1,7 +1,7 @@
 # atn-node-js 
 atn-node-js is for building npm AIapps & NodeJS services that interact with ATN Network.
 
-![atn-node-js architecture](https://github.com/ATNIO/AI_market_plan/blob/master/images/ATN-JS.svg)
+![atn-ecosystem](http://p5vswdxl9.bkt.clouddn.com/atn-ecosystem.png "ATN生态")
 
 ### 方法简介
 
@@ -18,10 +18,10 @@ atn-node-js is for building npm AIapps & NodeJS services that interact with ATN 
 
 ### 快速开始  
 
-我们精心准备了一个简单的示例:[atn-client-example](https://github.com/ATNIO/atn-client-example)方便你快速开发使用**atn-node-js**
+我们精心准备了一个简单的示例:atn-client-example(https://github.com/ATNIO/atn-client-example)方便你快速开发使用 **atn-node-js**
  
 1. `AI Market` 上查询想要使用的AI服务：🔗[https://market-test.atnio.net]  
-   例如：
+    例如：
    ```javascript
    dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303"
    ``` 
