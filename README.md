@@ -1,5 +1,5 @@
 # atn-node-js 
-atn-node-js 是基于Node和Web3独立封装的程序包，是ATN Client的一部分。ATN Client是生态的面向用户的重要一环，是连接DBotServer开发和APP Developer的 "桥梁"。在ATN生态中所处位置如下图所示：
+ &emsp;&emsp;atn-node-js 是基于Node和Web3独立封装的程序包，是ATN Client的一部分。ATN Client是生态的面向用户的重要一环，是连接DBotServer开发和APP Developer的 "桥梁"。在ATN生态中所处位置如下图所示：
 
 ![atn-ecosystem](http://p5vswdxl9.bkt.clouddn.com/atn-ecosystem.png "ATN生态")
 
@@ -16,9 +16,8 @@ atn-node-js 是基于Node和Web3独立封装的程序包，是ATN Client的一�
 -  关闭AI调用通道：closeChannel(receiverAddress, balance, closeSignature)
 -  调用DBotServer AI服务：callDBotAI(dbotAddress, uri, method, option)
 
-### 快速开始  
-
-我们精心准备了一个简单的示例:atn-client-example(https://github.com/ATNIO/atn-client-example)方便你快速开发使用 **atn-node-js**
+### 快速开始   
+&emsp;&emsp;我们精心准备了一个简单的示例:atn-client-example(https://github.com/ATNIO/atn-client-example)方便你快速开发使用 **atn-node-js**
  
 1. `AI Market` 上查询想要使用的AI服务：🔗[https://market-test.atnio.net]  
     例如：
