@@ -6,15 +6,15 @@
 ### 方法简介
 
 #### 简单使用：
--  初始化 DBotServer AI 服务调用通道：initChannel(dbotAddress, private_key)
--  调用 DBotServer AI服务：callDbotApi(dbotAddress, uri, method, option)
+-  初始化**DBotServer AI**服务调用通道：initChannel(dbotAddress, private_key)
+-  调用**DBotServer AI**服务：callDbotApi(dbotAddress, uri, method, option)
 
 #### 具体使用：
--  创建AI调用通道： createChannel(receiverAddress, deposit)
--  获取AI通道信息： getChannelDetail(receiverAddress)
+-  创建**AI**调用通道： createChannel(receiverAddress, deposit)
+-  获取**AI**通道信息： getChannelDetail(receiverAddress)
 -  增加通道调用次数：topUpChannel(receiverAddress, value)
--  关闭AI调用通道： closeChannel(receiverAddress, balance, closeSignature)
--  调用DBotServer AI服务：callDBotAI(dbotAddress, uri, method, option)
+-  关闭**AI**调用通道： closeChannel(receiverAddress, balance, closeSignature)
+-  调用**DBotServer AI**服务：callDBotAI(dbotAddress, uri, method, option)
 
 ### 快速开始   
 &emsp;&emsp;我们精心准备了一个简单的示例:`atn-client-example`([项目地址](https://github.com/ATNIO/atn-client-example))方便你快速开发使用 **atn-node-js**
@@ -56,48 +56,52 @@
 
  * 3.2 具体使用开发示例   
  
-   STEP 1：创建DBotServer调用通道
+   STEP 1：引入 **atn-node-js** 包
+   
+   ```javascript
+   var Atn = require('atn-node-js');
+   var key = require('../atnconfig/user1');
+      
+   const atn = new Atn(key.key);
+   ```
+ 
+   STEP 2：创建DBotServer调用通道
+   
    ```javascript
    // 代码片段  
    // 1. 引入 atn-node-js 包
-   var Atn = require('atn-node-js');
-   var key = require('../atnconfig/user1');
-   
    ...
 
    const deposit = 3e18  //可自定义
    const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303"
-   
    
    // 2. 使用 步骤(1) 上查询的DBotServer 地址
    const result = await atn.createChannel(dbotAddress, deposit)
    return result
    ```  
    
-   STEP 2：创建DBotServer调用通道
+   STEP 3：创建 **DBotServer** 调用通道
+   
    ```javascript
-   //1. 引入 atn-node-js 包
-   var Atn = require('atn-node-js');
-   var key = require('../atnconfig/user1');
-  
+   // 代码片段  
+   // 1. 引入 atn-node-js 包
    ...
    
    const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303"
-   //2. 获取创建的调用通道信息
+   // 2. 获取创建的调用通道信息
    const result = await atn.getChannelDetail(dbotAddress);
    ``` 
    
-   STEP 3：调用指定地址的DBotServer AI服务
-   ```javascript
-   //1. 引入 atn-node-js 包
-   var Atn = require('atn-node-js');
-   var key = require('../atnconfig/user1');
+   STEP 4：调用指定地址的 **DBotServer AI** 服务
    
+   ```javascript
+   // 代码片段
+   // 1. 引入 atn-node-js 包
    ...
    
    const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303";
    // 调用DBotServer AI 服务
-   //2. 设置请求参数（百度nlp请求示例）
+   // 2. 设置请求参数（百度nlp请求示例）
    var option = {
      headers: {
          "Content-Type": "application/json;charset=UTF-8"
@@ -108,16 +112,17 @@
    };
    var uri = '/lexer';
    var method = 'post';
-   //3. 调用DBotServer AI服务
+   // 3. 调用DBotServer AI服务
    const result = await atn.callDbotApi(dbotAddress,uri,method,option);
    
    ```
    
-   STEP 4：增加通道调用次数
+   STEP 5：增加通道调用次数
+   
    ```javascript
+   // 代码片段
    // 1. 引入 atn-node-js 包
-   var Atn = require('atn-node-js');
-   var key = require('../atnconfig/user1');
+   ... 
 
    const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303";
    var vaule = 10e18 ; //可自定义，按照单位可自己换算
@@ -127,9 +132,13 @@
   
    ```
    
-   STEP 5：关闭调用通道
+   STEP 6：关闭调用通道
+   
    ```javascript
+   // 代码片段
    // 1. 引入 atn-node-js 包
+   ...
+
    const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303";
    var vaule = 10e18 ; //可自定义，按照单位可自己换算
    
