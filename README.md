@@ -1,5 +1,5 @@
 # atn-node-js 
-atn-node-js is for building npm AIapps & NodeJS services that interact with ATN Network.
+atn-node-js 是基于Node和Web3独立封装的程序包，是ATN Client的一部分。ATN Client是生态的面向用户的重要一环，是连接DBotServer开发和APP Developer的 "桥梁"。在ATN生态中所处位置如下图所示：
 
 ![atn-ecosystem](http://p5vswdxl9.bkt.clouddn.com/atn-ecosystem.png "ATN生态")
 
