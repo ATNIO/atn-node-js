@@ -21,7 +21,7 @@
  
 #### 1. `AI Market` 上查询想要使用的AI服务 
    🔗[AI Market地址](https://market-test.atnio.net)  
-   例如：
+   例如：**百度NLP**
    ```javascript
    dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303"
    ``` 
