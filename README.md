@@ -5,11 +5,11 @@ atn-node-js 是基于Node和Web3独立封装的程序包，是ATN Client的一�
 
 ### 方法简介
 
-简单使用：
+#### 简单使用：
 -  初始化DBotServer AI服务调用通道：initChannel(dbotAddress, private_key)
 -  调用DBotServer AI服务：callDbotApi(dbotAddress, uri, method, option)
 
-具体使用：
+#### 具体使用：
 -  创建AI调用通道：createChannel(receiverAddress, deposit)
 -  获取AI通道信息： getChannelDetail(receiverAddress)
 -  增加通道调用次数：topUpChannel(receiverAddress, value)
