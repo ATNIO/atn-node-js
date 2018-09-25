@@ -6,11 +6,12 @@ let BigNumber = require('bignumber.js')
 let Buffer = require('safe-buffer').Buffer
 let sendTx = require('./sendTx')
 let accountTool = require('./tools/account')
+
 const DbotJson = require('./contracts/dbot/dbot.json')
 const TransferChannelJson = require('./contracts/channel/transferChannel.json')
 const MockBlockNumber = 1
 const transferChannelAddress = "0x0000000000000000000000000000000000000012";
-
+const deposit = 1e18
 
 class Atn {
 
@@ -22,8 +23,10 @@ class Atn {
    * @param private_key
    * @param rpc_provider
    */
-  constructor(private_key,rpc_provider = 'https://rpc-test.atnio.net', env = 'prod') {
+  constructor(private_key, rpc_provider = 'https://rpc-test.atnio.net', env = 'prod') {
+
     this.web3 = new Web3(rpc_provider)
+
     this.account = this.web3.eth.accounts.privateKeyToAccount(private_key)
     // this.web3.eth.accounts.wallet.add(this.account)
     this.channelContract = new this.web3.eth.Contract(TransferChannelJson.abi, transferChannelAddress)
@@ -35,29 +38,145 @@ class Atn {
   }
 
 
-  async unlockAccountsIfNeeded(account, password, unlock_duration_sec) {
-    accountTool.unlockSingleAccountIfNeeded(account, password, unlock_duration_sec)
-  }
-
-
-
-  getHyperProtocolType(){
-    return this.hyperProtocolType
-  }
   /**
-   * web3.eth.accounts.create([entropy]);
-   * @returns {Promise<Account>}
+   * @method
+   * @descri 创建AI调用通道
+   *
+   * @param receiverAddress
+   * @param deposit
+   * @returns {Promise<*>}
    */
-  async createAccount() {
-    return web3.eth.accounts.create();
+  async createChannel(receiverAddress, deposit) {
+    // Check if a channel is exist
+    let info = await this.getChannelInfo(receiverAddress)
+    if (info['deposit'] != 0 || info['blockNumber'] != 0) {
+      throw new Error('Channel has exist.')
+    }
+    return sendTx(this.web3, this.account, this.channelContract, 'createChannel(address)', [receiverAddress], deposit)
+  }
+
+
+  /**
+   * @descri 获取ATN Chain上的AI调用通道信息
+   *
+   * @param receiverAddress
+   * @returns {Promise<{key: any, deposit: *, blockNumber: *}>}
+   */
+  async getChannelInfo(receiverAddress) {
+    let key = await this.channelContract.methods.getKey(this.account.address, receiverAddress, MockBlockNumber).call()
+    let channel = await this.channelContract.methods.channels(key).call()
+    let info = {'key': key, 'deposit': channel[0], 'blockNumber': channel[1]}
+    return info
+  }
+
+
+  /**
+   * @descri 查询DBotServer 上存在的AI调用通道信息
+   *
+   * @param receiverAddress
+   * @returns {Promise<*>}
+   */
+  async getChannelDetail(receiverAddress) {
+    let dbotAddress = receiverAddress
+    let domain = await this.getDbotDomain(dbotAddress)
+    const channelInfoURL = `${this.handlerDbotDomain(domain, this.hyperProtocolType)}/api/v1/dbots/${dbotAddress}/channels/${this.account.address}`
+    console.log('-----------getChannelDetail-----------', channelInfoURL)
+    try {
+      let res = await axios.get(channelInfoURL)
+      if (res.data.length > 0) {
+        // channel contract ensure only one channel is allowed.
+        let channelDetail = res.data[0]
+        channelDetail.domain = domain
+        return channelDetail
+      } else {
+        return undefined
+      }
+    } catch (e) {
+      console.error(e.name, e.message)
+      throw new Error('Get channel detail failed.')
+    }
   }
 
   /**
-   * 创建账号，获取 private_key 可选
+   * @method
+   * @descri 关闭AI调用通道
+   *
+   * @param receiverAddress
+   * @param balance
+   * @param closeSignature
+   * @returns {Promise<*>}
+   */
+  async closeChannel(receiverAddress, balance) {
+    let dbotContract
+    try {
+      dbotContract = new this.web3.eth.Contract(DbotJson.abi, receiverAddress)
+    } catch (e) {
+      return CloseChannelException1
+    }
+    const dbot = {} as Dbot
+    dbot.domain = Web3.utils.hexToString(await dbotContract.methods.domain().call({from}))
+
+    const channelDetail = await this.getChannelInfo(receiverAddress, from)
+    const blockNumber = channelDetail.blockNumber
+    const targetUrl = this.handlerDbotDomain(dbot.domain, this.hyperProtocolType)
+    const URL = `${targetUrl}/api/v1/dbots/${receiverAddress}/channels/${from}/${blockNumber}`
+    let closeSignChannelInfo
+    try {
+      closeSignChannelInfo = await axios.delete(URL, {params: {balance: balance}})
+    } catch (e) {
+      console.error(e.name, e.message)
+      return new Error(e.toString())
+    }
+    const closeSignature = closeSignChannelInfo.data.close_signature
+    let balanceSignature = this.signBalanceProof(receiverAddress, balance)
+    return sendTx(this.web3, this.account, this.channelContract, 'cooperativeClose(address,uint32,uint256,bytes,bytes)',
+      [receiverAddress, MockBlockNumber, balance, balanceSignature, closeSignature])
+  }
+
+
+  /**
+   * @method
+   * @descri 增加通道调用次数
+   *
+   * @param receiverAddress
+   * @param value
+   * @returns {Promise<*>}
+   */
+  async topUpChannel(receiverAddress, value) {
+    return sendTx(this.web3, this.account, this.channelContract, 'topUp(address,uint32)', [receiverAddress, MockBlockNumber], value)
+  }
+
+
+  /**
+   * @method
+   * @descri 初始化调用通道
+   *
+   * @param dbotAddress
    * @param private_key
    * @returns {Promise<*>}
    */
-  async initAccount(...private_key) {
+  async initChannel(dbotAddress, private_key, times ) {
+    let account
+    if (private_key === undefined) {
+      account = await this.createAccount()
+    } else {
+      account = this.initAccount(private_key)
+    }
+    const addAccountResult = await this.addAccount(account.address)
+
+    console.log('add account info ', addAccountResult)
+    //TODO 1312321312
+    // const price =
+    const createChannelResult = await this.createChannel(account.address, deposit)
+    return createChannelResult
+  }
+
+  /**
+   * @descri 创建账号，获取 private_key 可选
+   * @param private_key
+   * @returns {Promise<*>}
+   */
+  async initAccount(private_key) {
     if (private_key) {
       console.log('------------init Channel private key-------------', private_key)
       let accountObj = await this.privateKeyToAccount(private_key)
@@ -66,24 +185,17 @@ class Atn {
       } else {
         throw new Error('no account on chain')
       }
-    } else {
-      let password = this.web3.utils.randomHex(32)
-      return await this.web3.eth.accounts.create(password);
     }
   }
 
 
-  async initChannel(dbotAddress, private_key) {
-    if (private_key === undefined) {
-
-    }
-  }
-
-
-  async privateKeyToAccount(privateKey) {
-    return this.web3.eth.accounts.privateKeyToAccount(privateKey);
-  }
-
+  /**
+   * @method
+   * @descri
+   *
+   * @param hash
+   * @returns {String}
+   */
   signMessage(hash) {
     let hashNoHex = Buffer.from(hash.slice(2), 'hex')
     let privateKey = Buffer.from(this.account.privateKey.slice(2), 'hex')
@@ -133,99 +245,24 @@ class Atn {
   }
 
 
-  // get channel info
-  async getChannelInfo(receiverAddress) {
-    let key = await this.channelContract.methods.getKey(this.account.address, receiverAddress, MockBlockNumber).call()
-    let channel = await this.channelContract.methods.channels(key).call()
-    let info = {
-      'key': key,
-      'deposit': channel[0],
-      'blockNumber': channel[1]
-    }
-    return info
-  }
-
-  async getChannelDeposit(receiverAddress) {
-    let info = await this.getChannelInfo(receiverAddress)
-    return info['deposit']
-  }
-
-  async getChannelDetail(receiverAddress) {
-    let dbotAddress = receiverAddress
-    let domain = await this.getDbotDomain(dbotAddress)
-    const httpHeader = domain.toLowerCase().startsWith('http') ? domain :this.getHyperProtocolType.concat('://').concat(domain)
-    let url = `${httpHeader}/api/v1/dbots/${dbotAddress}/channels/${this.account.address}`
-    console.log('-----------getChannelDetail-----------',url)
-    try {
-      let res = await axios.get(url)
-      if (res.data.length > 0) {
-        // channel contract ensure only one channel is allowed.
-        let channelDetail = res.data[0]
-        channelDetail.domain = domain
-        return channelDetail
-      } else {
-        return undefined
-      }
-    } catch (e) {
-      console.error(e.name, e.message)
-      throw new Error('Get channel detail failed.')
-    }
-  }
-
-  async requestCloseSignature(receiverAddress, balance) {
-    let dbotAddress = receiverAddress
-    let detail = await this.getChannelDetail(dbotAddress)
-    let block_number = detail.open_block_number
-    // console.log(block_number)
-    // https://${detail.domain}
-    const httpHeader = detail.domain.toLowerCase().startsWith('http') ? domain :this.getHyperProtocolType.concat('://').concat(domain)
-    const URL = `${httpHeader}/api/v1/dbots/${dbotAddress}/channels/${this.account.address}/${detail.open_block_number}`
-    console.log('-----------getChannelDetail-----------',URL)
-    try {
-      let resp = await axios.delete(URL, {params: {balance: balance}})
-      if (resp.status == 200) {
-        let closeSignature = resp.data.close_signature
-        console.log('closeSignature is : ', closeSignature)
-        return closeSignature
-      } else {
-        // TODO custom error
-        console.error('Get close signature failed')
-        throw new Error('Get close signature failed')
-      }
-    } catch (e) {
-      throw new Error('Get close signature error')
-    }
-  }
-
-  async createChannel(receiverAddress, deposit) {
-    // Check if a channel is exist
-    let info = await this.getChannelInfo(receiverAddress)
-    if (info['deposit'] != 0 || info['blockNumber'] != 0) {
-      throw new Error('Channel has exist.')
-    }
-    return sendTx(this.web3, this.account, this.channelContract, 'createChannel(address)', [receiverAddress], deposit)
-  }
-
-  async topUpChannel(receiverAddress, value) {
-    return sendTx(this.web3, this.account, this.channelContract, 'topUp(address,uint32)', [receiverAddress, MockBlockNumber], value)
-  }
-
-  async closeChannel(receiverAddress, balance, closeSignature) {
-    let balanceSignature = this.signBalanceProof(receiverAddress, balance)
-    return sendTx(this.web3, this.account, this.channelContract,
-      'cooperativeClose(address,uint32,uint256,bytes,bytes)',
-      [receiverAddress, MockBlockNumber, balance, balanceSignature, closeSignature])
-  }
-
   /* TODO
   async uncooperativeCloseChannel(receiverAddress, balance) {}    //chain
   async settleChannel(receiverAddress) {}                       //chain
   */
 
-  async callDbotApi(dbotAddress, uri, method, option) {
+  /**
+   * @method
+   * @descri 调用DBotServer AI服务
+   *
+   * @param dbotAddress
+   * @param uri
+   * @param method
+   * @param option
+   * @returns {Promise<*|void>}
+   */
+  async callDBotAI(dbotAddress, uri, method, option) {
     let channelDetail = await this.getChannelDetail(dbotAddress)
     if (channelDetail == undefined) {
-      // TODO custom error for this case
       throw new Error('Channel is not synced by dbot server.')
     }
     let price = await this.getPrice(dbotAddress, uri, method)
@@ -236,6 +273,18 @@ class Atn {
     return this.callAPI(dbotAddress, domain, uri, method, option, balance, blockNumber)
   }
 
+  /**
+   * @descri
+   *
+   * @param dbotAddress
+   * @param domain
+   * @param uri
+   * @param method
+   * @param option
+   * @param balance
+   * @param blockNumber
+   * @returns {Promise<void>}
+   */
   async callAPI(dbotAddress, domain, uri, method, option, balance, blockNumber) {
     option.url = `${this.handlerDbotDomain(domain, this.hyperProtocolType)}/call/${dbotAddress}${uri}`
     option.method = method
@@ -248,7 +297,6 @@ class Atn {
     option.headers.RDN_sender_address = this.account.address
     option.headers.RDN_receiver_address = dbotAddress
     option.headers.RDN_open_block = blockNumber
-
     try {
       return await axios(option)
     } catch (e) {
@@ -257,6 +305,92 @@ class Atn {
       throw e
     }
   }
+
+
+  /**
+   * @method :
+   * @descri : 处理DBotServer的domain
+   *
+   * @param domain
+   * @param hyperProtocolType
+   * @returns {string}
+   */
+  handlerDbotDomain(domain, hyperProtocolType) {
+    const result = domain.toLowerCase().startsWith('http') ? domain : hyperProtocolType.concat('://').concat(domain)
+    return result
+  }
+
+
+  /**
+   * @method
+   * @descri 通过私钥获取账户信息
+   *
+   * @param privateKey
+   * @returns {Promise<Account>}
+   */
+  async privateKeyToAccount(privateKey) {
+    return this.web3.eth.accounts.privateKeyToAccount(privateKey);
+  }
+
+
+  /**
+   * @method unlockAccountsIfNeeded
+   * @descri 解锁单个账户
+   *
+   * @param account
+   * @param password
+   * @param unlock_duration_sec
+   * @returns {Promise<void>}
+   */
+  async unlockAccountsIfNeeded(account, password, unlock_duration_sec) {
+    accountTool.unlockSingleAccountIfNeeded(account, password, unlock_duration_sec)
+  }
+
+
+  /**
+   * @desri 创建账户
+   *
+   * web3.eth.accounts.create([entropy]);
+   * @returns {Promise<Account>}
+   */
+  async createAccount() {
+    return web3.eth.accounts.create();
+  }
+
+  /**
+   * @method
+   * @descri 向钱包增加账户
+   *
+   * @param account
+   * @returns {Promise<any>}
+   */
+  async addAccount(account) {
+    return this.web3.eth.accounts.wallet.add(account)
+  }
+
+
+  /**
+   * @method
+   * @descri 向DBotServer服务获取Balance签名
+   *
+   * @param receiverAddress
+   * @param balance
+   * @returns {Promise<*>}
+   */
+  async requestCloseSignature(receiverAddress, balance) {
+    let detail = await this.getChannelDetail(receiverAddress)
+    const blockNumber = detail.blockNumber
+    const URL = `${this.handlerDbotDomain(domain, this.hyperProtocolType)}/api/v1/dbots/${receiverAddress}/channels/${from}/${blockNumber}`.toString()
+    console.log('-----------getChannelDetail-----------', URL)
+    let resp
+    try {
+      resp = await axios.delete(URL, {params: {balance: balance}})
+      return resp.data.close_signature;
+    } catch (e) {
+      throw new Error('Get close signature error')
+    }
+  }
+
 
   getBalanceProofData(receiverAddress, balance) {
     return [
