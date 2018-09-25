@@ -33,13 +33,14 @@
    ![AI Market](http://p5vswdxl9.bkt.clouddn.com/AI_market_ui.png "AI Market UI")	
    
 #### 2. 使用`atn-node-js`
+   ```javascript 
 
-   ```javascript
+   ```
+   ```markdown
    $ npm install atn-node-js --save
    ```
-   
 #### 3. 开发示例  
-##### 3.1 简单使用   
+ * 3.1 简单使用   
   
    STEP 1：初始化DBotServer调用服务
    ```javascript
@@ -52,7 +53,7 @@
 
    ```
 
-##### 3.2 具体使用开发示例   
+ * 3.2 具体使用开发示例   
  
    STEP 1：创建DBotServer调用通道
    ```javascript
