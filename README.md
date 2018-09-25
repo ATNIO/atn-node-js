@@ -20,7 +20,7 @@
 &emsp;&emsp;我们精心准备了一个简单的示例:`atn-client-example`([项目地址](https://github.com/ATNIO/atn-client-example))方便你快速开发使用 **atn-node-js**
  
 #### 1. `AI Market` 上查询想要使用的AI服务 
-   🔗(AI Market)[https://market-test.atnio.net]  
+   🔗[AI Market地址](https://market-test.atnio.net)
    例如：
    ```javascript
    dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303"
