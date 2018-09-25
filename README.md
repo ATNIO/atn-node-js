@@ -1,5 +1,5 @@
 # atn-node-js 
- &emsp;&emsp;atn-node-js 是基于Node和Web3独立封装的程序包，是ATN Client的一部分。ATN Client是生态的面向用户的重要一环，是连接DBotServer开发和APP Developer的 "桥梁"。在ATN生态中所处位置如下图所示：
+ &emsp;&emsp;***atn-node-js***是基于 **Node** 和 **Web3** 独立开发的程序包，是 **ATN Client** 的一部分。ATN Client是生态的面向用户的重要一环，是连接 **DBotServer** 开发和**APP Developer** 的 "桥梁"。在ATN生态中所处位置如下图所示：
 
 ![atn-ecosystem](http://p5vswdxl9.bkt.clouddn.com/atn-ecosystem.png "ATN生态")
 
@@ -10,10 +10,10 @@
 -  调用DBotServer AI服务：callDbotApi(dbotAddress, uri, method, option)
 
 #### 具体使用：
--  创建AI调用通道：createChannel(receiverAddress, deposit)
+-  创建AI调用通道： createChannel(receiverAddress, deposit)
 -  获取AI通道信息： getChannelDetail(receiverAddress)
 -  增加通道调用次数：topUpChannel(receiverAddress, value)
--  关闭AI调用通道：closeChannel(receiverAddress, balance, closeSignature)
+-  关闭AI调用通道： closeChannel(receiverAddress, balance, closeSignature)
 -  调用DBotServer AI服务：callDBotAI(dbotAddress, uri, method, option)
 
 ### 快速开始   
