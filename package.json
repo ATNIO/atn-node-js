@@ -1,6 +1,6 @@
 {
   "name": "atn-node-js",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "a light client node js lib for Dbot",
   "main": "index.js",
   "scripts": {

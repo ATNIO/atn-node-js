@@ -14,7 +14,8 @@ const DbotJson = require('./contracts/dbot/dbot.json')
 const TransferChannelJson = require('./contracts/channel/transferChannel.json')
 const MockBlockNumber = 1
 const transferChannelAddress = "0x0000000000000000000000000000000000000012";
-const defaultDeposit = 1e18
+const defaultDeposit = 10e18
+
 
 
 class Atn {
@@ -231,9 +232,8 @@ class Atn {
       account = await this.web3.eth.accounts.privateKeyToAccount(private_key)
       console.log('-----------account 2----------', account.address)
     }
-
     let data = {
-      key:account.privateKey
+      key: account.privateKey
     }
     let outputFileName = appRootPath.concat(dirNameFile)
     console.log('------------outputFileName', outputFileName)
@@ -247,29 +247,46 @@ class Atn {
     });
     //获取当前账户余额
     let balanace = await this.web3.eth.getBalance(account.address)
-    let ethSource = await this.web3.utils.from(balanace, 'ether')
-    if (ethSource < 1) {
+    const balanceBN = Web3.utils.toBN(balanace)
+    const defaultDeposit = Web3.utils.toBN(defaultDeposit)
+    // lt <
+    if (balanceBN < 0 || balanceBN.lt(defaultDeposit)) {
       return {
-        status: 0,
-        account: JSON.stringify(account),
+        status:0,
+        account: account,
         channel: null,
         msg: "You need get ether, url: https://faucet-test.atnio.net"
       }
     }
+    // if channel exits , just topup the channel
+    let channelDetail = await this.getChannelDetail(dbotAddress)
+    if (!channelDetail){
+      const topupResult = this.topUpChannel(dbotAddress,topupBalance)
+      return {
+        status: 1,
+        account: account,
+        channel: topupResult,
+        msg: "success"
+      };
+    }
     //创建通道
-    let CResult = await atn.createChannel(dbotAddress, 1e19)
+    let CResult
+    try {
+      CResult = await this.createChannel(dbotAddress, balanceBN)
+    } catch (e) {
+      return {
+        status: 0,
 
+      }
+    }
     return {
       status: 1,
-      account: JSON.stringify(account),
-      channel: JSON.stringify(CResult),
+      account: account,
+      channel: CResult,
       msg: "success"
     };
   }
 
-  async getBalanceQuantity(dbotAddress, dirNameFile) {
-
-  }
 
   /**
    * @descri 创建账号，获取 private_key 可选
