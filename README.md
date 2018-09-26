@@ -35,10 +35,12 @@ English | [简体中文](./README.zh-CN.md)
    ```
    ![AI Market](http://p5vswdxl9.bkt.clouddn.com/AI_market_ui.png "AI Market UI")	
    
-#### 2. 使用 `atn-node-js`
-   ```javascript 
-
+#### 2. 使用 `atn-node-js`  
+   使用该包之前请确认本地已安装node环境(需要V8.0以上node版本)
    ```
+   $ node --version 
+   ```
+   JS项目根目录安装atn-node-js
    ```markdown
    $ npm install atn-node-js --save
    ```
