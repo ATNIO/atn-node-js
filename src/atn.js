@@ -6,12 +6,14 @@ let BigNumber = require('bignumber.js')
 let Buffer = require('safe-buffer').Buffer
 let sendTx = require('./sendTx')
 let accountTool = require('./tools/account')
-
+let fs = require('fs')
+let appRoot = require('app-root-path');
 const DbotJson = require('./contracts/dbot/dbot.json')
 const TransferChannelJson = require('./contracts/channel/transferChannel.json')
 const MockBlockNumber = 1
 const transferChannelAddress = "0x0000000000000000000000000000000000000012";
-const deposit = 1e18
+const defaultDeposit = 1e18
+
 
 class Atn {
 
@@ -30,6 +32,9 @@ class Atn {
     this.account = this.web3.eth.accounts.privateKeyToAccount(private_key)
     // this.web3.eth.accounts.wallet.add(this.account)
     this.channelContract = new this.web3.eth.Contract(TransferChannelJson.abi, transferChannelAddress)
+
+    this.PRODUCT_ENV = 'prod'
+
     if (env && typeof env === 'string' && env.toLowerCase() !== this.PRODUCT_ENV) {
       this.hyperProtocolType = 'https'
     } else {
@@ -113,7 +118,7 @@ class Atn {
     } catch (e) {
       return CloseChannelException1
     }
-    const dbot = {} as Dbot
+    const dbot = {}
     dbot.domain = Web3.utils.hexToString(await dbotContract.methods.domain().call({from}))
 
     const channelDetail = await this.getChannelInfo(receiverAddress, from)
@@ -146,6 +151,65 @@ class Atn {
     return sendTx(this.web3, this.account, this.channelContract, 'topUp(address,uint32)', [receiverAddress, MockBlockNumber], value)
   }
 
+  /**
+   * @method Web3 Method - addAccount
+   * @descri 设置默认账户
+   *
+   * @param account
+   */
+  async setDefaultAccount(privateKey) {
+    let account = await this.web3.eth.accounts.privateKeyToAccount(privateKey)
+    this.web3.eth.defaultAccount = account.address
+  }
+
+
+  /**
+   * @descri 根据私钥后去account信息，如果不传私钥则自动创建
+   *
+   * @param private_key
+   * @returns {Promise<*>}
+   */
+  async initAccount(private_key) {
+    let account
+    if (private_key === undefined && private_key == null) {
+      account = await this.createAccount()
+      console.log('-----------account 1----------', account.address)
+    } else {
+      account = await this.web3.eth.accounts.privateKeyToAccount(private_key)
+      console.log('-----------account 2----------', account.address)
+    }
+    return account
+  }
+
+  /**
+   *
+   * @descri 生成私钥文件
+   *
+   * @param privateKey
+   * @param outputFileName
+   * @returns {Promise<void>}
+   */
+  async generateKeyFile(private_key, dirNameFile) {
+    let account
+    if (private_key === undefined && private_key == null) {
+      account = await this.createAccount()
+      console.log('-----------account 1----------', account.address)
+    } else {
+      account = await this.web3.eth.accounts.privateKeyToAccount(private_key)
+      console.log('-----------account 2----------', account.address)
+    }
+    let data = JSON.stringify(account)
+    let outputFileName = appRoot.path.join(__dirname, '..').join(__dirname, '..').concat(dirNameFile)
+    console.log('------------outputFileName', outputFileName)
+    console.log('------------generateKeyFile', data)
+    fs.writeFile(outputFileName, JSON.stringify(data, null, 3), function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("JSON saved to " + outputFileName);
+      }
+    });
+  }
 
   /**
    * @method
@@ -155,22 +219,51 @@ class Atn {
    * @param private_key
    * @returns {Promise<*>}
    */
-  async initConfig(dbotAddress, private_key, times) {
-    let account
+  async initConfig(dbotAddress, private_key, dirNameFile) {
     //1. 将私钥转换为账户
-    if (private_key === undefined) {
-      //如果没有私钥则创建账户
+    let account
+    if (private_key === undefined && private_key == null) {
       account = await this.createAccount()
+      console.log('-----------account 1----------', account.address)
     } else {
-      account = this.initAccount(private_key)
+      account = await this.web3.eth.accounts.privateKeyToAccount(private_key)
+      console.log('-----------account 2----------', account.address)
     }
-    const addAccountResult = await this.addAccount(account.address)
+    let data = JSON.stringify(account)
+    let outputFileName = appRoot.path.join(__dirname, '..').join(__dirname, '..').concat(dirNameFile)
+    console.log('------------outputFileName', outputFileName)
+    console.log('------------generateKeyFile', data)
+    fs.writeFile(outputFileName, JSON.stringify(data, null, 3), function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("JSON saved to " + outputFileName);
+      }
+    });
+    //获取当前账户余额
+    let balanace = await this.web3.eth.getBalance(account.address)
+    let ethSource = await this.web3.utils.from(balanace, 'ether')
+    if (ethSource < 1){
+      return {
+        status:0,
+        account: JSON.stringify(account),
+        channel: null,
+        msg:"You need get ether, url: https://faucet-test.atnio.net"
+      }
+    }
+    //创建通道
+    let CResult = await atn.createChannel(dbotAddress, 1e19)
 
-    console.log('add account info ', addAccountResult)
-    //TODO 1312321312
-    // const price =
-    const createChannelResult = await this.createChannel(account.address, deposit)
-    return createChannelResult
+    return {
+      status:1,
+      account: JSON.stringify(account),
+      channel: JSON.stringify(CResult),
+      msg:"success"
+    };
+  }
+
+  async getBalanceQuantity(dbotAddress, dirNameFile){
+
   }
 
   /**
@@ -241,11 +334,6 @@ class Atn {
     return endpoint.price
   }
 
-  async getChallengePeriod() {
-    let peroid = await this.channelContract.methods.challengePeriod().call()
-    return peroid
-  }
-
 
   /* TODO
   async uncooperativeCloseChannel(receiverAddress, balance) {}    //chain
@@ -310,16 +398,41 @@ class Atn {
 
 
   /**
-   * @method :
-   * @descri : 处理DBotServer的domain
+   * @descri 轮询查询交易信息，设置超时时间和确认块数
    *
-   * @param domain
-   * @param hyperProtocolType
-   * @returns {string}
+   * @param txHash
+   * @param timeout
+   * @param confirmations
+   * @returns {Promise<void>}
    */
-  handlerDbotDomain(domain, hyperProtocolType) {
-    const result = domain.toLowerCase().startsWith('http') ? domain : hyperProtocolType.concat('://').concat(domain)
-    return result
+  async waitTx(txHash, timeout, confirmations) {
+    console.log('-----------------hash------------', txHash)
+    const blockStart = await this.web3.eth.getBlockNumber()
+    const startTime = new Date().getTime()
+    const endTime = startTime + timeout * (confirmations + 1)
+    obj.startTime = startTime
+    do {
+      await this.asyncSleep(1e3)
+      if (typeof obj === 'object') {
+        const flag = obj.flag
+        if (!flag) break
+      }
+      const [receipt, block] = await Promise.call([
+        await this.web3.eth.getTransactionReceipt(txHash),
+        await this.web3.eth.getBlockNumber()
+      ])
+      if (!receipt || !receipt.blockNumber) {
+        console.log('Waiting tx..', block - blockStart)
+      } else if (block - receipt.blockNumber < confirmations) {
+        console.log('Waiting confirmations...', block - receipt.blockNumber)
+      } else {
+        return receipt
+      }
+      if (endTime < new Date().getTime()) {
+        break
+      }
+    } while (true)
+    return {status: "0", msg: "timeout"}
   }
 
 
@@ -356,7 +469,7 @@ class Atn {
    * @returns {Promise<Account>}
    */
   async createAccount() {
-    return web3.eth.accounts.create();
+    return this.web3.eth.accounts.create();
   }
 
   /**
@@ -394,6 +507,31 @@ class Atn {
   }
 
 
+  /**
+   * @method :
+   * @descri : 处理DBotServer的domain
+   *
+   * @param domain
+   * @param hyperProtocolType
+   * @returns {string}
+   */
+  handlerDbotDomain(domain, hyperProtocolType) {
+    const result = domain.toLowerCase().startsWith('http') ? domain : hyperProtocolType.concat('://').concat(domain)
+    return result
+  }
+
+
+  async asyncSleep(timeout) {
+    return new Promise(resolve => setTimeout(resolve, timeout))
+  }
+
+  /**
+   * @descri 获取签名 schema
+   *
+   * @param receiverAddress
+   * @param balance
+   * @returns {*[]}
+   */
   getBalanceProofData(receiverAddress, balance) {
     return [
       {

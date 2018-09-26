@@ -1,6 +1,6 @@
 {
   "name": "atn-node-js",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "description": "a light client node js lib for Dbot",
   "main": "index.js",
   "scripts": {
@@ -24,16 +24,19 @@
   "homepage": "https://github.com/ATNIO/atn-node-js",
   "license": "ISC",
   "dependencies": {
+    "app-root-path": "^2.1.0",
     "axios": "^0.18.0",
     "bignumber.js": "^7.2.1",
     "bn.js": "^4.11.8",
     "eth-sig-util": "^2.0.2",
     "ethereumjs-tx": "^1.3.3",
     "ethereumjs-util": "^5.2.0",
+    "fs": "0.0.1-security",
     "iconv": "^2.3.0",
     "iconv-lite": "^0.4.23",
     "js-base64": "^2.4.8",
     "mocha": "^5.2.0",
+    "path": "^0.12.7",
     "qs": "^6.5.2",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
