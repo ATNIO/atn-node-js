@@ -7,7 +7,8 @@ let Buffer = require('safe-buffer').Buffer
 let sendTx = require('./sendTx')
 let accountTool = require('./tools/account')
 let fs = require('fs')
-let appRoot = require('app-root-path');
+let appRootPath = require('app-root-path').resolve('');
+
 let path = require('path');
 const DbotJson = require('./contracts/dbot/dbot.json')
 const TransferChannelJson = require('./contracts/channel/transferChannel.json')
@@ -200,7 +201,7 @@ class Atn {
       console.log('-----------account 2----------', account.address)
     }
     let data = JSON.stringify(account)
-    let outputFileName = appRoot.path.join(__dirname, '..').join(__dirname, '..').concat(dirNameFile)
+    let outputFileName = appRoot.p(__dirname, '..').join(__dirname, '..').concat(dirNameFile)
     console.log('------------outputFileName', outputFileName)
     console.log('------------generateKeyFile', data)
     fs.writeFile(outputFileName, JSON.stringify(data, null, 3), function (err) {
@@ -220,7 +221,7 @@ class Atn {
    * @param private_key
    * @returns {Promise<*>}
    */
-  async initConfig(dbotAddress, private_key, dirNameFile) {
+  async initConfig(dirNameFile, dbotAddress, private_key) {
     //1. 将私钥转换为账户
     let account
     if (private_key === undefined && private_key == null) {
@@ -230,8 +231,11 @@ class Atn {
       account = await this.web3.eth.accounts.privateKeyToAccount(private_key)
       console.log('-----------account 2----------', account.address)
     }
-    let data = JSON.stringify(account)
-    let outputFileName = appRoot.path.join(__dirname, '..').join(__dirname, '..').concat(dirNameFile)
+
+    let data = {
+      key:account.privateKey
+    }
+    let outputFileName = appRootPath.concat(dirNameFile)
     console.log('------------outputFileName', outputFileName)
     console.log('------------generateKeyFile', data)
     fs.writeFile(outputFileName, JSON.stringify(data, null, 3), function (err) {
@@ -244,26 +248,26 @@ class Atn {
     //获取当前账户余额
     let balanace = await this.web3.eth.getBalance(account.address)
     let ethSource = await this.web3.utils.from(balanace, 'ether')
-    if (ethSource < 1){
+    if (ethSource < 1) {
       return {
-        status:0,
+        status: 0,
         account: JSON.stringify(account),
         channel: null,
-        msg:"You need get ether, url: https://faucet-test.atnio.net"
+        msg: "You need get ether, url: https://faucet-test.atnio.net"
       }
     }
     //创建通道
     let CResult = await atn.createChannel(dbotAddress, 1e19)
 
     return {
-      status:1,
+      status: 1,
       account: JSON.stringify(account),
       channel: JSON.stringify(CResult),
-      msg:"success"
+      msg: "success"
     };
   }
 
-  async getBalanceQuantity(dbotAddress, dirNameFile){
+  async getBalanceQuantity(dbotAddress, dirNameFile) {
 
   }
 

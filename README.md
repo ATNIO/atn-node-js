@@ -79,6 +79,8 @@ English | [简体中文](./README.zh-CN.md)
    var key = require('../atnconfig/user1');
    //  创建atn对象   
    const atn = new Atn(key.key);
+   //  设置DBotAddress地址
+   const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303";
    ```
  
    STEP 2：创建DBotServer调用通道
@@ -89,11 +91,8 @@ English | [简体中文](./README.zh-CN.md)
    ...
 
    const deposit = 3e18  //可自定义
-   const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303"
-   
    // 2. 使用 步骤(1) 上查询的DBotServer 地址
    const result = await atn.createChannel(dbotAddress, deposit)
-   return result
    ```  
    
    STEP 3：创建 **DBotServer** 调用通道
@@ -103,7 +102,6 @@ English | [简体中文](./README.zh-CN.md)
    // 1. 引入 atn-node-js 包
    ...
    
-   const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303"
    // 2. 获取创建的调用通道信息
    const result = await atn.getChannelDetail(dbotAddress);
    ``` 
@@ -114,8 +112,6 @@ English | [简体中文](./README.zh-CN.md)
    // 代码片段
    // 1. 引入 atn-node-js 包
    ...
-   
-   const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303";
    // 调用DBotServer AI 服务
    // 2. 设置请求参数（百度nlp请求示例）, option参数设置参见 callDBotAI参数具体详情
    var option = {
@@ -140,7 +136,7 @@ English | [简体中文](./README.zh-CN.md)
    // 1. 引入 atn-node-js 包
    ... 
 
-   const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303";
+  
    var vaule = 10e18 ; //可自定义，按照单位可自己换算
 
    // 2. 增加调用次数
