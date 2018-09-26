@@ -61,5 +61,4 @@ Calling the AI`lib.callAI()`
 
 
 #### reference
-* [Nodejs单元测试](https://segmentfault.com/a/1190000002921481)
 * [mochajs](https://mochajs.org/#more-information)

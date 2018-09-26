@@ -248,9 +248,9 @@ class Atn {
     //获取当前账户余额
     let balanace = await this.web3.eth.getBalance(account.address)
     const balanceBN = Web3.utils.toBN(balanace)
-    const defaultDeposit = Web3.utils.toBN(defaultDeposit)
+    const defaultDepositBN = Web3.utils.toBN(defaultDeposit)
     // lt <
-    if (balanace === 0 || balanceBN.lt(defaultDeposit)) {
+    if (balanace === 0 || balanceBN.lt(defaultDepositBN)) {
       return {
         status:0,
         account: account,
@@ -261,7 +261,7 @@ class Atn {
     // if channel exits , just topup the channel
     let channelDetail = await this.getChannelDetail(dbotAddress)
     if (!channelDetail){
-      const topupResult = await this.topUpChannel(dbotAddress,topupBalance)
+      const topupResult = await this.topUpChannel(dbotAddress,defaultDepositBN.toString())
       return {
         status: 1,
         account: account,
