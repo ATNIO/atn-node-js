@@ -1,5 +1,5 @@
-import * as web3 from 'web3'
 
+let web3 = require('web3')
 
 function isAccountLocked(account) {
   try {
@@ -15,7 +15,7 @@ function isAccountLocked(account) {
 }
 
 function unlockAccountsIfNeeded(accounts, passwords, unlock_duration_sec) {
-  if (typeof(unlock_duration_sec) === 'undefined') unlock_duration_sec = 300
+  if (typeof(unlock_duration_sec) === 'undefined') unlock_duration_sec = 3600
 
   for (let i = 0; i < accounts.length; i++) {
     if (isAccountLocked(accounts[i])) {
@@ -25,4 +25,15 @@ function unlockAccountsIfNeeded(accounts, passwords, unlock_duration_sec) {
   }
 }
 
-export {isAccountLocked, unlockAccountsIfNeeded}
+function unlockSingleAccountIfNeeded(account,password,unlock_duration_sec) {
+  if (typeof(unlock_duration_sec) === 'undefined') unlock_duration_sec = 3600
+  web3.personal.unlockAccount(account,password,unlock_duration_sec)
+}
+
+
+module.exports = {
+  isAccountLocked,
+  unlockAccountsIfNeeded,
+  unlockSingleAccountIfNeeded
+}
+
