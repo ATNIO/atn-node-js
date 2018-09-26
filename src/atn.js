@@ -250,22 +250,22 @@ class Atn {
     const balanceBN = Web3.utils.toBN(balanace)
     const defaultDeposit = Web3.utils.toBN(defaultDeposit)
     // lt <
-    if (balanceBN < 0 || balanceBN.lt(defaultDeposit)) {
+    if (balanace === 0 || balanceBN.lt(defaultDeposit)) {
       return {
         status:0,
         account: account,
-        channel: null,
+        data: null,
         msg: "You need get ether, url: https://faucet-test.atnio.net"
       }
     }
     // if channel exits , just topup the channel
     let channelDetail = await this.getChannelDetail(dbotAddress)
     if (!channelDetail){
-      const topupResult = this.topUpChannel(dbotAddress,topupBalance)
+      const topupResult = await this.topUpChannel(dbotAddress,topupBalance)
       return {
         status: 1,
         account: account,
-        channel: topupResult,
+        data: topupResult,
         msg: "success"
       };
     }
@@ -276,13 +276,14 @@ class Atn {
     } catch (e) {
       return {
         status: 0,
+        msg: "create channel fail"
 
       }
     }
     return {
       status: 1,
       account: account,
-      channel: CResult,
+      data: CResult,
       msg: "success"
     };
   }
