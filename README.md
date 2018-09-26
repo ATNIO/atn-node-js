@@ -19,7 +19,7 @@ English | [简体中文](./README.zh-CN.md)
 
 
 ### 快速开始   
-&emsp;&emsp;我们精心准备了一个简单的示例：`atn-client-example`([项目地址](https://github.com/ATNIO/atn-client-example))方便你快速开发使用 **atn-node-js**
+&emsp;&emsp;我们精心准备了一个简单的示例：`ATN Client Example`([项目地址](https://github.com/ATNIO/atn-client-example))方便你快速开发使用 **atn-node-js**
  
 #### 1. `AI Market` 上查询想要使用的 DBot AI 服务 
    🔗[AI Market地址](https://market-test.atnio.net)  
@@ -45,6 +45,7 @@ English | [简体中文](./README.zh-CN.md)
    $ npm install atn-node-js --save
    ```
 #### 3. 开发示例  
+以下相关示例请参照[ATN Client Example](https://github.com/ATNIO/atn-client-example)
  * 3.1 简单使用   
   
    STEP 1：初始化DBotServer调用服务
@@ -161,8 +162,9 @@ English | [简体中文](./README.zh-CN.md)
    const result = await atn.closeChannel(dbotAddress,balance);
    ```
    
-   
-   
+ 
+### 接口文档
+* []()  
 
 
 

@@ -8,6 +8,7 @@ let sendTx = require('./sendTx')
 let accountTool = require('./tools/account')
 let fs = require('fs')
 let appRoot = require('app-root-path');
+let path = require('path');
 const DbotJson = require('./contracts/dbot/dbot.json')
 const TransferChannelJson = require('./contracts/channel/transferChannel.json')
 const MockBlockNumber = 1
