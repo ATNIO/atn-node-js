@@ -61,7 +61,7 @@
 #### 3. 开发示例  
 以下相关示例可参照[ATN Client Example](https://github.com/ATNIO/atn-client-example)
 
- - 3.1 **简单使用**   
+##### 3.1 **简单使用**   
   
    STEP 1：初始化DBotServer调用服务
    ```javascript
@@ -101,9 +101,9 @@
    ```
   
   
-  ---
+
   
- - 3.2 **具体使用开发示例**：  
+##### 3.2 **具体使用开发示例**：  
  
    STEP 1：引入 **atn-node-js** 包，并在当前项目下配置个人账户私钥
    
@@ -192,10 +192,8 @@
    // 2. 关闭调用通道
    const result = await atn.closeChannel(dbotAddress,balance);
    ```
-
-
+   
 ----   
-
 
 ### 接口文档
 * [atn-node-js](https://atnio.github.io/atn-js/classes/_atn_.atn.html)  
