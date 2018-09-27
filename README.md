@@ -27,6 +27,8 @@
 -  调用**DBotServer AI**服务：callDBotAI(dbotAddress, uri, method, option)
 
 
+----
+
 ### 快速开始   
 &emsp;&emsp;我们精心准备了一个简单的示例：`ATN Client Example`([项目地址](https://github.com/ATNIO/atn-client-example))方便你快速开发使用 **atn-node-js**
  
@@ -53,10 +55,14 @@
    ```markdown
    $ npm install atn-node-js --save
    ```
+ 
+
+
 #### 3. 开发示例  
 以下相关示例可参照[ATN Client Example](https://github.com/ATNIO/atn-client-example)
- * 3.1 简单使用   
-  
+
+- 3.1 **简单开发示例**   
+
    STEP 1：初始化DBotServer调用服务
    ```javascript
    // 代码片段引入
@@ -72,16 +78,14 @@
    const result = await atn.initConfig(privateKeyFile, dbotAddress);
    
    ```
-   ***注***：如果自己有私钥可增加参数如下所示
+   ***注***：如果已有私钥，可增加参数，如下所示： 
    ```javascript
    var privateKey = '0x01adc971225be058c7031b536375b79115ed58993c86a4ec4288f36fc9eb51b7'; 
    const result = await atn.initConfig(privateKeyFile, dbotAddress,privateKey);
    ```
    
-   
    STEP 2：调用DBotServer
    ```javascript
-   
    var option = {
         headers: {
             "Content-Type": "application/json;charset=UTF-8"
@@ -95,9 +99,9 @@
       // 3. 调用DBotServer AI服务
       const result = await atn.callDBotAI(dbotAddress,uri,method,option);
    ```
----
- * 3.2 具体使用开发示例   
- 
+
+- 3.2 **具体开发示例**
+
    STEP 1：引入 **atn-node-js** 包，并在当前项目下配置个人账户私钥
    
    ```js
@@ -186,10 +190,13 @@
    const result = await atn.closeChannel(dbotAddress,balance);
    ```
    
- 
+----   
+
 ### 接口文档
 * [atn-node-js](https://atnio.github.io/atn-js/classes/_atn_.atn.html)  
 
+
+----
 
 ### 相关参考
 * [mochajs](https://mochajs.org/#more-information)

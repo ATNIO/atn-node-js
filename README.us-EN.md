@@ -1,38 +1,40 @@
 # ATN Client 
 ### atn-node-js 
 English | [简体中文](README.md)   
- &emsp;&emsp;***atn-node-js*** 是基于 **Node** 和 **Web3** 独立开发的程序包，是 **ATN Client** 的一部分。**ATN Client** 是**ATN生态**的面向用户的重要一环，是连接 **DBotServer** 开发者和 **APP Developer** 的 "桥梁"。**ATN Client** 在 **ATN** 生态中所处位置如下图所示：
+ &emsp;&emsp;***Atn-node-js*** is a library based on **Node** and **Web3**, and is also part of the **ATN Client**. As a key component of **ATN** ecosystem, **ATN Client** connects **DBot developer** and **Application Developer**, and the following figure shows the relations.
+：
 
-![atn-ecosystem](http://p5vswdxl9.bkt.clouddn.com/ATN%20ecosystem.png "ATN生态")
+![atn-ecosystem](http://p5vswdxl9.bkt.clouddn.com/ATN%20ecosystem.png "ATN ecosystem")
 
 ---
 
 ### ATN Client
 
 **ATN Client**目前有以下两个版本：  
-   - [atn-node-js](https://github.com/ATNIO/atn-node-js)：node版本程序包;  
-   - [atn-js](https://github.com/ATNIO/atn-js)：浏览器端使用，结合[atn-wallet](https://github.com/ATNIO/atn-wallet)，使用`atn-wallet`自身的签名算法;
+   - [atn-node-js](https://github.com/ATNIO/atn-node-js): this is node version lib ;  
+   - [atn-js](https://github.com/ATNIO/atn-js)：used in browser ，we can use with the sign method in [atn-wallet](https://github.com/ATNIO/atn-wallet) 
      
- 未来会陆续提供 **Java**、**Python**等主流语言版本。
+     
+ In the future ,we will provide main programming language like **Java**,**Python** and so on . 
 
-#### 简单使用：
--  初始化**DBotServer AI**服务调用通道：initChannel(dbotAddress, private_key)     
--  调用**DBotServer AI**服务：callDBotAI(dbotAddress, uri, method, option)
+#### Simple usage：
+-  initConfig(privateKeyFile, dbotAddress): to initialize the Channel of a DBot AI service .
+-  callDBotAI(dbotAddress, uri, method, option): to call the AI service from a DBot
 
-#### 具体使用：
--  创建**AI**调用通道： createChannel(receiverAddress, deposit)
--  获取**AI**通道信息： getChannelDetail(receiverAddress)
--  增加通道调用次数：topUpChannel(receiverAddress, value)
--  关闭**AI**调用通道： closeChannel(receiverAddress, balance, closeSignature)
--  调用**DBotServer AI**服务：callDBotAI(dbotAddress, uri, method, option)
+#### Detail usage：
+-  createChannel(receiverAddress, deposit): to create AI calling channel 
+-  getChannelDetail(receiverAddress): get information of AI channel
+-  topUpChannel(receiverAddress, value): top-up to the channel, to increase the number of callings
+-  closeChannel(receiverAddress, balance, closeSignature): close the DBot AI channel
+-  callDBotAI(dbotAddress, uri, method, option): call DBot AI service
 
 
-### 快速开始   
-&emsp;&emsp;我们精心准备了一个简单的示例：`ATN Client Example`([项目地址](https://github.com/ATNIO/atn-client-example))方便你快速开发使用 **atn-node-js**
+### Quick start   
+&emsp;&emsp; We prepare a simple example `ATN Client Example`([Project Address](https://github.com/ATNIO/atn-client-example)), to demonstrate how to use **atn-node-js** in the development .
  
-#### 1. `AI Market` 上查询想要使用的 DBot AI 服务 
-   🔗[AI Market地址](https://market-test.atnio.net)  
-   例如：**百度NLP**
+#### 1. Search for a **DBot AI** service in the `AI Market`
+   🔗AI Market:[link](https://market-test.atnio.net)  
+   For instance,: Baidu NLP API 
    ```javascript
    dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303"
    ``` 
@@ -44,42 +46,44 @@ English | [简体中文](README.md)
    ```
    ![AI Market](http://p5vswdxl9.bkt.clouddn.com/AI_market_ui.png "AI Market UI")	
    
-#### 2. 使用 `atn-node-js`  
-   使用该包之前请确认本地已安装node环境(需要V8.0以上node版本)
+#### 2. Use `atn-node-js`  
+   Before using this library, make sure you have successfully installed the node (version 8.0 or later).
    ```
    $ node --version 
    ```
-   JS项目根目录安装atn-node-js
+   Then Install the atn-node-js at the root directory of the JS project
    ```markdown
    $ npm install atn-node-js --save
    ```
-#### 3. 开发示例  
-以下相关示例可参照[ATN Client Example](https://github.com/ATNIO/atn-client-example)
- * 3.1 简单使用   
+#### 3. Development Example   
+
+The following example is in [ATN Client Example](https://github.com/ATNIO/atn-client-example) project
+
+ * 3.1 Simple Usage
   
-   STEP 1：初始化DBotServer调用服务
+   STEP 1：Initialize the DBot Server AI service
    ```javascript
-   // 代码片段引入
-   // 1. 引入 atn-node-js 包
+   // Code Snippets
+   // 1. Import atn-node-js lib
    var Atn = require('atn-node-js');
    var key = require('../atnconfig/user1');
    const atn = new Atn(key.key);
    
    const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303"
-   var privateKeyFile = "/libs/atnconfig/user.json";//自定义私钥生成所在文件(包含目录)
+   var privateKeyFile = "/libs/atnconfig/user.json";//you can define your own filename  and filepath
   
-   // 2. 初始化调用
+   // 2. Init the condition before calling DBot Server AI
    const result = await atn.initConfig(privateKeyFile, dbotAddress);
    
    ```
-   ***注***：如果自己有私钥可增加参数如下所示
+   ***Notice***：If you have private key ,you can use this method like this:
    ```javascript
    var privateKey = '0x01adc971225be058c7031b536375b79115ed58993c86a4ec4288f36fc9eb51b7'; 
    const result = await atn.initConfig(privateKeyFile, dbotAddress,privateKey);
    ```
    
    
-   STEP 2：调用DBotServer
+   STEP 2：Call the DbotServer
    ```javascript
    
    var option = {
@@ -92,56 +96,56 @@ English | [简体中文](README.md)
       };
       var uri = '/lexer';
       var method = 'post';
-      // 3. 调用DBotServer AI服务
+      // 3. Call DBotServer AI Service
       const result = await atn.callDBotAI(dbotAddress,uri,method,option);
    ```
 
- * 3.2 具体使用开发示例   
+ * 3.2 Detail Usage   
  
-   STEP 1：引入 **atn-node-js** 包，并在当前项目下配置个人账户私钥
+   STEP 1：Import the **atn-node-js** lib ，and plugin your own private key in your project
    
    ```js
-   //  引入atn-node-js包
+   //  Import the atn-node-js lib
    var Atn = require('atn-node-js');
-   //  配置个人账户（当前开发目录下配置json文件）
+   //  Config your  private key json file
    var key = require('../atnconfig/user1');
-   //  创建atn对象   
+   //  create atn Object   
    const atn = new Atn(key.key);
-   //  设置DBotAddress地址
+   //  set the DBot Address 
    const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303";
    ```
  
-   STEP 2：创建DBotServer调用通道
+   STEP 2：Create a channel to call DBot Server AI service 
    
    ```js
-   // 代码片段  
-   // 1. 引入 atn-node-js 包
+   // Code Snippets : 
+   // 1. Import the atn-node-js lib
    ...
 
-   const deposit = 3e18  //可自定义
-   // 2. 使用 步骤(1) 上查询的DBotServer 地址
+   const deposit = 3e18  // you can define the variable by yourself 
+   // 2. Use the DBotServer address which queried on AI Market 
    const result = await atn.createChannel(dbotAddress, deposit)
    ```  
    
-   STEP 3：创建 **DBotServer** 调用通道
+   STEP 3：Get the channel from **DBotServer**
    
    ```js
-   // 代码片段  
-   // 1. 引入 atn-node-js 包
+   // Code Snippets :
+   // 1. Import the atn-node-js lib
    ...
    
-   // 2. 获取创建的调用通道信息
+   // 2. Get channel infomation from DBotServer
    const result = await atn.getChannelDetail(dbotAddress);
    ``` 
    
-   STEP 4：调用指定地址的 **DBotServer AI** 服务
+   STEP 4：Call the DBotServer AI Service
    
    ```js
-   // 代码片段
-   // 1. 引入 atn-node-js 包
+   // Code Snippets :
+   // 1. Import the atn-node-js lib
    ...
-   // 调用DBotServer AI 服务
-   // 2. 设置请求参数（百度nlp请求示例）, option参数设置参见 callDBotAI参数具体详情
+   // Call DBotServer AI Service
+   // 2. The request params config like Baidu NLP
    var option = {
      headers: {
          "Content-Type": "application/json;charset=UTF-8"
@@ -152,44 +156,44 @@ English | [简体中文](README.md)
    };
    var uri = '/lexer';
    var method = 'post';
-   // 3. 调用DBotServer AI服务
+   // 3. Call DBotServer AI Service
    const result = await atn.callDBotAI(dbotAddress,uri,method,option);
    
    ```
      
-   STEP 5：增加通道调用次数
-   
+   STEP 5：Top-up into the channel
+
    ```js
-   // 代码片段
-   // 1. 引入 atn-node-js 包
+   // Code Snippets 
+   // 1. Import the atn-node-js lib
    ... 
 
   
-   var vaule = 10e18 ; //可自定义，按照单位可自己换算
+   var vaule = 10e18 ; //you can define the value by yourself
 
-   // 2. 增加调用次数
+   // 2. increate the usage times of DBotServer AI services 
    const result = await  atn.topUpChannel(dbotAddress,vaule);
   
    ```
    
-   STEP 6：关闭调用通道
+   STEP 6：Close the channel
    
    ```js
-   // 代码片段
-   // 1. 引入 atn-node-js 包
+   // Code Snippets
+   // 1. Import the atn-node-js lib
    ...
 
    const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303";
    var vaule = 10e18 ; //可自定义，按照单位可自己换算
    
-   // 2. 关闭调用通道
+   // 2. Close the channel
    const result = await atn.closeChannel(dbotAddress,balance);
    ```
    
  
-### 接口文档
+### API Document
 * [atn-node-js](https://atnio.github.io/atn-js/classes/_atn_.atn.html)  
 
 
-### reference
+### Reference
 * [mochajs](https://mochajs.org/#more-information)
