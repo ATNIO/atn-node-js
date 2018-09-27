@@ -1,6 +1,6 @@
 # ATN Client 
 ### atn-node-js 
-English | [简体中文](./README.zh-CN.md)   
+English | [简体中文](README.md)   
  &emsp;&emsp;***atn-node-js*** 是基于 **Node** 和 **Web3** 独立开发的程序包，是 **ATN Client** 的一部分。**ATN Client** 是**ATN生态**的面向用户的重要一环，是连接 **DBotServer** 开发者和 **APP Developer** 的 "桥梁"。**ATN Client** 在 **ATN** 生态中所处位置如下图所示：
 
 ![atn-ecosystem](http://p5vswdxl9.bkt.clouddn.com/ATN%20ecosystem.png "ATN生态")
@@ -54,7 +54,7 @@ English | [简体中文](./README.zh-CN.md)
    $ npm install atn-node-js --save
    ```
 #### 3. 开发示例  
-以下相关示例请参照[ATN Client Example](https://github.com/ATNIO/atn-client-example)
+以下相关示例可参照[ATN Client Example](https://github.com/ATNIO/atn-client-example)
  * 3.1 简单使用   
   
    STEP 1：初始化DBotServer调用服务
@@ -191,5 +191,5 @@ English | [简体中文](./README.zh-CN.md)
 * [atn-node-js](https://atnio.github.io/atn-js/classes/_atn_.atn.html)  
 
 
-#### reference
+### reference
 * [mochajs](https://mochajs.org/#more-information)
