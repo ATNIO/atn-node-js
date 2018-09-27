@@ -1,6 +1,6 @@
 # ATN Client 
 ### atn-node-js 
-English | [简体中文](./README.zh-CN.md)   
+English | [简体中文](README.md)   
  &emsp;&emsp;***atn-node-js*** 是基于 **Node** 和 **Web3** 独立开发的程序包，是 **ATN Client** 的一部分。**ATN Client** 是**ATN生态**的面向用户的重要一环，是连接 **DBotServer** 开发者和 **APP Developer** 的 "桥梁"。**ATN Client** 在 **ATN** 生态中所处位置如下图所示：
 
 ![atn-ecosystem](http://p5vswdxl9.bkt.clouddn.com/ATN%20ecosystem.png "ATN生态")
@@ -10,7 +10,7 @@ English | [简体中文](./README.zh-CN.md)
 ### ATN Client
 
 **ATN Client**目前有以下两个版本：  
-   - [atn-node-js](https://github.com/ATNIO/atn-node-js)：**Node**版本程序，本程序包Demo项目可参考[ATN Client Example](https://github.com/ATNIO/atn-client-example/tree/alpha#%E8%B0%83%E8%AF%95);  
+   - [atn-node-js](https://github.com/ATNIO/atn-node-js)：node版本程序包;  
    - [atn-js](https://github.com/ATNIO/atn-js)：浏览器端使用，结合[atn-wallet](https://github.com/ATNIO/atn-wallet)，使用`atn-wallet`自身的签名算法;
      
  未来会陆续提供 **Java**、**Python**等主流语言版本。
@@ -191,5 +191,5 @@ English | [简体中文](./README.zh-CN.md)
 * [atn-node-js](https://atnio.github.io/atn-js/classes/_atn_.atn.html)  
 
 
-### 相关参考
+### reference
 * [mochajs](https://mochajs.org/#more-information)
