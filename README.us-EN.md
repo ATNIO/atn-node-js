@@ -54,7 +54,7 @@ English | [简体中文](README.md)
    $ npm install atn-node-js --save
    ```
 #### 3. 开发示例  
-以下相关示例请参照[ATN Client Example](https://github.com/ATNIO/atn-client-example)
+以下相关示例可参照[ATN Client Example](https://github.com/ATNIO/atn-client-example)
  * 3.1 简单使用   
   
    STEP 1：初始化DBotServer调用服务
