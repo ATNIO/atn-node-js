@@ -152,7 +152,7 @@ The following example is in [ATN Client Example](https://github.com/ATNIO/atn-cl
        },
        responseEncoding: "GBK",
        method: "post",
-       data: { text: "百度是一家高科技公司" }
+       data: { text: "Baidu is a high-tech company" }
    };
    var uri = '/lexer';
    var method = 'post';
@@ -184,7 +184,7 @@ The following example is in [ATN Client Example](https://github.com/ATNIO/atn-cl
    ...
 
    const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303";
-   var vaule = 10e18 ; //可自定义，按照单位可自己换算
+   var vaule = 10e18 ; //you can define the value by yourself
    
    // 2. Close the channel
    const result = await atn.closeChannel(dbotAddress,balance);
