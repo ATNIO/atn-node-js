@@ -222,7 +222,13 @@ class Atn {
    * @param private_key
    * @returns {Promise<*>}
    */
-  async initConfig(dirNameFile, dbotAddress, private_key) {
+  async initConfig(dirNameFile, dbotAddress, private_key, defaultTopup) {
+    if (defaultTopup === undefined) {
+      defaultTopup = defaultDeposit
+    }else{
+      let  bn = new BigNumber(1e18,10)
+      defaultTopup = bn.multipliedBy(defaultTopup).toString()
+    }
     //1. 将私钥转换为账户
     let account
     if (private_key === undefined && private_key == null) {
@@ -248,25 +254,25 @@ class Atn {
     //获取当前账户余额
     let balanace = await this.web3.eth.getBalance(account.address)
     const balanceBN = Web3.utils.toBN(balanace)
-    const defaultDepositBN = Web3.utils.toBN(defaultDeposit)
+    const defaultDepositBN = Web3.utils.toBN(defaultTopup)
     // lt <
     if (balanace === 0 || balanceBN.lt(defaultDepositBN)) {
       return {
         status:0,
         account: account,
-        data: null,
+        data: this.web3.utils.fromWei(balanace,'ether'),
         msg: "You need get ether, url: https://faucet-test.atnio.net"
       }
     }
     // if channel exits , just topup the channel
     let channelDetail = await this.getChannelDetail(dbotAddress)
-    if (!channelDetail){
+    if (channelDetail){
       const topupResult = await this.topUpChannel(dbotAddress,defaultDepositBN.toString())
       return {
         status: 1,
         account: account,
         data: topupResult,
-        msg: "success"
+        msg: "topupChannel success"
       };
     }
     //创建通道
@@ -284,10 +290,9 @@ class Atn {
       status: 1,
       account: account,
       data: CResult,
-      msg: "success"
+      msg: "create channel success"
     };
   }
-
 
   /**
    * @descri 创建账号，获取 private_key 可选
@@ -517,8 +522,9 @@ class Atn {
    */
   async requestCloseSignature(receiverAddress, balance) {
     let detail = await this.getChannelDetail(receiverAddress)
-    const blockNumber = detail.blockNumber
-    const URL = `${this.handlerDbotDomain(domain, this.hyperProtocolType)}/api/v1/dbots/${receiverAddress}/channels/${from}/${blockNumber}`.toString()
+    const blockNumber = detail.open_block_number
+    const from = await this.account.address
+    const URL = `${this.handlerDbotDomain(detail.domain, this.hyperProtocolType)}/api/v1/dbots/${receiverAddress}/channels/${from}/${blockNumber}`.toString()
     console.log('-----------getChannelDetail-----------', URL)
     let resp
     try {
@@ -528,6 +534,7 @@ class Atn {
       throw new Error('Get close signature error')
     }
   }
+
 
 
   /**
