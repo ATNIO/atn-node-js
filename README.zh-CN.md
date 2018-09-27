@@ -8,8 +8,8 @@ English | [简体中文](./README.zh-CN.md)
 ### ATN Client
 
 **ATN Client**目前有以下两个版本：  
-     - [atn-node-js](https://github.com/ATNIO/atn-node-js)：node版本程序包;  
-     - [atn-js](https://github.com/ATNIO/atn-js)：浏览器端使用，结合[atn-wallet](https://github.com/ATNIO/atn-wallet)，使用`atn-wallet`自身的签名算法;
+   - [atn-node-js](https://github.com/ATNIO/atn-node-js)：node版本程序包;  
+   - [atn-js](https://github.com/ATNIO/atn-js)：浏览器端使用，结合[atn-wallet](https://github.com/ATNIO/atn-wallet)，使用`atn-wallet`自身的签名算法;
      
  未来会陆续提供 **Java**、**Python**等主流语言版本。
 
