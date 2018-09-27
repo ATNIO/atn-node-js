@@ -1,6 +1,6 @@
 natn-js is for building browser AIapps & NodeJS services that interact with ATN Network.
 
-![atn-js architecture](https://github.com/ATNIO/AI_market_plan/blob/master/images/ATN-JS.svg)
+![atn-js architecture](http://p5vswdxl9.bkt.clouddn.com/ATN-js.svg)
 
 ### This JS Client contains the following methods
 
