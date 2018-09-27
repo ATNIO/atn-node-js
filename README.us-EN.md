@@ -92,7 +92,7 @@ The following example is in [ATN Client Example](https://github.com/ATNIO/atn-cl
           },
           responseEncoding: "GBK",
           method: "post",
-          data: { text: "百度是一家高科技公司" }
+          data: { text: "Baidu is a high-tech company" }
       };
       var uri = '/lexer';
       var method = 'post';
