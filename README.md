@@ -16,7 +16,7 @@
  未来会陆续提供 **Java**、**Python**等主流语言版本。
 
 #### 简单使用：
--  初始化**DBotServer AI**服务调用通道：initChannel(dbotAddress, private_key)     
+-  初始化**DBotServer AI**服务调用通道：initConfig(privateKeyFile, dbotAddress);     
 -  调用**DBotServer AI**服务：callDBotAI(dbotAddress, uri, method, option)
 
 #### 具体使用：
