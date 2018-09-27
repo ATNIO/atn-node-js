@@ -1,0 +1,30 @@
+{
+    "info": {
+        "name": "Voice Evaluation",
+        "domain": "localhost:5000",
+        "description": "Voice Evaluation DBot from [xfyun](https://www.xfyun.cn/).",
+        "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWxsTxF3PS5Xz8SuMuukyZU6jVDikZIucjqEGchB2kgJTGLC04",
+        "category": "speechRecognition",
+        "tags": [
+            "AI",
+            "technology"
+        ]
+    },
+    "endpoints": [
+        {
+            "uri": "/ise",
+            "path": "/v1/service/v1/ise",
+            "method": "post",
+            "price": 1000000000000000
+        }
+    ],
+    "specification": {
+        "type": "swagger",
+        "format": "json",
+        "file": "dbot_swagger_voice_evaluation.json"
+    },
+    "middleware": {
+        "module": "dbot_middleware_voice_evaluation",
+        "class": "AppKey"
+    }
+}

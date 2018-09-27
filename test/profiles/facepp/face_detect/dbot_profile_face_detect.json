@@ -1,0 +1,30 @@
+{
+    "info": {
+        "name": "Face Detect",
+        "domain": "localhost:5000",
+        "description": "Face Detect DBot from [face++](https://www.faceplusplus.com.cn/).",
+        "logo": "https://www.faceplusplus.com.cn/images/cn/header/face-cn.png",
+        "category": "faceRecognition",
+        "tags": [
+            "AI",
+            "technology"
+        ]
+    },
+    "endpoints": [
+        {
+            "uri": "/facepp/detect",
+            "path": "/facepp/v3/detect",
+            "method": "post",
+            "price": 1000000000000000
+        }
+    ],
+    "specification": {
+        "type": "swagger",
+        "format": "json",
+        "file": "dbot_swagger_face_detect.json" 
+    },
+    "middleware": {
+        "module": "dbot_middleware_face_detect",
+        "class": "ApikeyMiddleware"
+    }
+}

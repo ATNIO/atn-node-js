@@ -1,0 +1,30 @@
+{
+    "info": {
+        "name": "Voice Dictation",
+        "domain": "localhost:5000",
+        "description": "Voice Dictation DBot from [xfyun](https://www.xfyun.cn/).",
+        "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWxsTxF3PS5Xz8SuMuukyZU6jVDikZIucjqEGchB2kgJTGLC04",
+        "category": "speechSynthesis",
+        "tags": [
+            "AI",
+            "technology"
+        ]
+    },
+    "endpoints": [
+        {
+            "uri": "/iat",
+            "path": "/v1/service/v1/iat",
+            "method": "post",
+            "price": 1000000000000000
+        }
+    ],
+    "specification": {
+        "type": "swagger",
+        "format": "json",
+        "file": "dbot_swagger_voice_dictation.json"
+    },
+    "middleware": {
+        "module": "dbot_middleware_voice_dictation",
+        "class": "AppKey"
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "info": {
+        "name": "Face Comparing",
+        "domain": "localhost:5000",
+        "description": "Face Comparing DBot from [xfyun](https://www.xfyun.cn/).",
+        "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWxsTxF3PS5Xz8SuMuukyZU6jVDikZIucjqEGchB2kgJTGLC04",
+        "category": "faceRecognition",
+        "tags": [
+            "AI",
+            "technology"
+        ]
+    },
+    "endpoints": [
+        {
+            "uri": "/face_verification",
+            "path": "/v1/service/v1/image_identify/face_verification",
+            "method": "post",
+            "price": 1000000000000000
+        }
+    ],
+    "specification": {
+        "type": "swagger",
+        "format": "json",
+        "file": "dbot_swagger_face_comparing.json"
+    },
+    "middleware": {
+        "module": "dbot_middleware_face_comparing",
+        "class": "AppKey"
+    }
+}
