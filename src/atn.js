@@ -345,12 +345,12 @@ class Atn {
     return this.web3.eth.accounts.privateKeyToAccount(privateKey);
   }
 
-  async getDbotName(dbotAddress) {
+  async getDBotName(dbotAddress) {
     let dbotContract = new this.web3.eth.Contract(DbotJson.abi, dbotAddress)
     return Web3.utils.hexToString(await dbotContract.methods.name().call())
   }
 
-  async getDbotDomain(dbotAddress) {
+  async getDBotDomain(dbotAddress) {
     let dbotContract = new this.web3.eth.Contract(DbotJson.abi, dbotAddress)
     return Web3.utils.hexToString(await dbotContract.methods.domain().call())
   }
@@ -499,18 +499,6 @@ class Atn {
   async createAccount() {
     return this.web3.eth.accounts.create();
   }
-
-  /**
-   * @method
-   * @descri 向钱包增加账户
-   *
-   * @param account
-   * @returns {Promise<any>}
-   */
-  async addAccount(account) {
-    return this.web3.eth.accounts.wallet.add(account)
-  }
-
 
   /**
    * @method

@@ -1,18 +1,30 @@
-atn-js is for building browser AIapps & NodeJS services that interact with ATN Network.
+natn-js is for building browser AIapps & NodeJS services that interact with ATN Network.
 
 ![atn-js architecture](http://p5vswdxl9.bkt.clouddn.com/ATN-js.svg)
 
-### This Node JS Client contains the following methods
+### This JS Client contains the following methods
 
-- [ ] 
-- [ ] getDbotInfo
-- [ ] openChannel
-- [ ] topupChannel
-- [ ] closeRequest
+- [ ] createChannel
+- [ ] getChannelInfo
+- [ ] getChannelDetail
+- [ ] topUpChannel
 - [ ] closeChannel
-- [ ] settleChannel
-- [ ] getChannels
-- [ ] callAI
+- [ ] callDBotAI
+- [ ] callAPI
+- [ ] requestCloseSignature
+
+- [ ] initConfig
+- [ ] initAccount
+- [ ] signBalanceProof
+- [ ] getDBotName
+- [ ] getDBotDomain
+- [ ] getPrice
+- [ ] waitTx
+- [ ] privateKeyToAccount
+- [ ] unlockAccountsIfNeeded
+- [ ] asyncSleep
+- [ ] getBalanceProofData
+- [ ] handlerDBotDomain
 
 ### Getting started
 
@@ -22,7 +34,9 @@ Clone this repository and install its dependencies:
 
 ```
 git clone https://github.com/ATNIO/atn-js.git
+
 cd atn-js
+
 npm i
 ```
 

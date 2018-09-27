@@ -4,15 +4,27 @@ natn-js is for building browser AIapps & NodeJS services that interact with ATN 
 
 ### This JS Client contains the following methods
 
-- [ ] getDbotCount
-- [ ] getDbotInfo
-- [ ] openChannel
-- [ ] topupChannel
-- [ ] closeRequest
+- [ ] createChannel
+- [ ] getChannelInfo
+- [ ] getChannelDetail
+- [ ] topUpChannel
 - [ ] closeChannel
-- [ ] settleChannel
-- [ ] getChannels
-- [ ] callAI
+- [ ] callDBotAI
+- [ ] callAPI
+- [ ] requestCloseSignature
+
+- [ ] initConfig
+- [ ] initAccount
+- [ ] signBalanceProof
+- [ ] getDBotName
+- [ ] getDBotDomain
+- [ ] getPrice
+- [ ] waitTx
+- [ ] privateKeyToAccount
+- [ ] unlockAccountsIfNeeded
+- [ ] asyncSleep
+- [ ] getBalanceProofData
+- [ ] handlerDBotDomain
 
 ### Getting started
 
@@ -22,7 +34,9 @@ Clone this repository and install its dependencies:
 
 ```
 git clone https://github.com/ATNIO/atn-js.git
+
 cd atn-js
+
 npm i
 ```
 
