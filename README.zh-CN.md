@@ -67,11 +67,17 @@ English | [简体中文](./README.zh-CN.md)
    
    const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303"
    var privateKeyFile = "/libs/atnconfig/user.json";//自定义私钥生成所在文件(包含目录)
-   var privateKey = ''
+  
    // 2. 初始化调用
-   // 2.1 如果自己没有账号可设置
-   const result = await atn.initConfig(privateKeyFile, dbotAddress, null, 1)
+   const result = await atn.initConfig(privateKeyFile, dbotAddress);
+   
    ```
+   ***注***：如果自己有私钥可增加参数如下所示
+   ```javascript
+   var privateKey = '0x01adc971225be058c7031b536375b79115ed58993c86a4ec4288f36fc9eb51b7'; 
+   const result = await atn.initConfig(privateKeyFile, dbotAddress,privateKey);
+   ```
+   
    
    STEP 2：调用DBotServer
    ```javascript
