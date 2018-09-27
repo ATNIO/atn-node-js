@@ -78,7 +78,7 @@
    const result = await atn.initConfig(privateKeyFile, dbotAddress);
    
    ```
-   ***注***：如果自己有私钥可增加参数如下所示
+   ***注***：如果已有私钥，可增加参数，如下所示： 
    ```javascript
    var privateKey = '0x01adc971225be058c7031b536375b79115ed58993c86a4ec4288f36fc9eb51b7'; 
    const result = await atn.initConfig(privateKeyFile, dbotAddress,privateKey);
