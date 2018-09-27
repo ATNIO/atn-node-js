@@ -7,12 +7,15 @@ let Buffer = require('safe-buffer').Buffer
 let sendTx = require('./sendTx')
 let accountTool = require('./tools/account')
 let fs = require('fs')
-let appRoot = require('app-root-path');
+let appRootPath = require('app-root-path').resolve('');
+
+let path = require('path');
 const DbotJson = require('./contracts/dbot/dbot.json')
 const TransferChannelJson = require('./contracts/channel/transferChannel.json')
 const MockBlockNumber = 1
 const transferChannelAddress = "0x0000000000000000000000000000000000000012";
-const defaultDeposit = 1e18
+const defaultDeposit = 10e18
+
 
 
 class Atn {
@@ -116,12 +119,13 @@ class Atn {
     try {
       dbotContract = new this.web3.eth.Contract(DbotJson.abi, receiverAddress)
     } catch (e) {
-      return CloseChannelException1
+      return new Error(e.toString())
     }
     const dbot = {}
+    const from  = this.account.address
     dbot.domain = Web3.utils.hexToString(await dbotContract.methods.domain().call({from}))
 
-    const channelDetail = await this.getChannelInfo(receiverAddress, from)
+    const channelDetail = await this.getChannelInfo(receiverAddress)
     const blockNumber = channelDetail.blockNumber
     const targetUrl = this.handlerDbotDomain(dbot.domain, this.hyperProtocolType)
     const URL = `${targetUrl}/api/v1/dbots/${receiverAddress}/channels/${from}/${blockNumber}`
@@ -199,7 +203,7 @@ class Atn {
       console.log('-----------account 2----------', account.address)
     }
     let data = JSON.stringify(account)
-    let outputFileName = appRoot.path.join(__dirname, '..').join(__dirname, '..').concat(dirNameFile)
+    let outputFileName = appRoot.p(__dirname, '..').join(__dirname, '..').concat(dirNameFile)
     console.log('------------outputFileName', outputFileName)
     console.log('------------generateKeyFile', data)
     fs.writeFile(outputFileName, JSON.stringify(data, null, 3), function (err) {
@@ -219,7 +223,13 @@ class Atn {
    * @param private_key
    * @returns {Promise<*>}
    */
-  async initConfig(dbotAddress, private_key, dirNameFile) {
+  async initConfig(dirNameFile, dbotAddress, private_key, defaultTopup) {
+    if (defaultTopup === undefined) {
+      defaultTopup = defaultDeposit
+    }else{
+      let  bn = new BigNumber(1e18,10)
+      defaultTopup = bn.multipliedBy(defaultTopup).toString()
+    }
     //1. 将私钥转换为账户
     let account
     if (private_key === undefined && private_key == null) {
@@ -229,8 +239,10 @@ class Atn {
       account = await this.web3.eth.accounts.privateKeyToAccount(private_key)
       console.log('-----------account 2----------', account.address)
     }
-    let data = JSON.stringify(account)
-    let outputFileName = appRoot.path.join(__dirname, '..').join(__dirname, '..').concat(dirNameFile)
+    let data = {
+      key: account.privateKey
+    }
+    let outputFileName = appRootPath.concat(dirNameFile)
     console.log('------------outputFileName', outputFileName)
     console.log('------------generateKeyFile', data)
     fs.writeFile(outputFileName, JSON.stringify(data, null, 3), function (err) {
@@ -242,28 +254,45 @@ class Atn {
     });
     //获取当前账户余额
     let balanace = await this.web3.eth.getBalance(account.address)
-    let ethSource = await this.web3.utils.from(balanace, 'ether')
-    if (ethSource < 1){
+    const balanceBN = Web3.utils.toBN(balanace)
+    const defaultDepositBN = Web3.utils.toBN(defaultTopup)
+    // lt <
+    if (balanace === 0 || balanceBN.lt(defaultDepositBN)) {
       return {
         status:0,
-        account: JSON.stringify(account),
-        channel: null,
-        msg:"You need get ether, url: https://faucet-test.atnio.net"
+        account: account,
+        data: this.web3.utils.fromWei(balanace,'ether'),
+        msg: "You need get ether, url: https://faucet-test.atnio.net"
       }
     }
+    // if channel exits , just topup the channel
+    let channelDetail = await this.getChannelDetail(dbotAddress)
+    if (channelDetail){
+      const topupResult = await this.topUpChannel(dbotAddress,defaultDepositBN.toString())
+      return {
+        status: 1,
+        account: account,
+        data: topupResult,
+        msg: "topupChannel success"
+      };
+    }
     //创建通道
-    let CResult = await atn.createChannel(dbotAddress, 1e19)
+    let CResult
+    try {
+      CResult = await this.createChannel(dbotAddress, balanceBN)
+    } catch (e) {
+      return {
+        status: 0,
+        msg: "create channel fail"
 
+      }
+    }
     return {
-      status:1,
-      account: JSON.stringify(account),
-      channel: JSON.stringify(CResult),
-      msg:"success"
+      status: 1,
+      account: account,
+      data: CResult,
+      msg: "create channel success"
     };
-  }
-
-  async getBalanceQuantity(dbotAddress, dirNameFile){
-
   }
 
   /**
@@ -494,8 +523,9 @@ class Atn {
    */
   async requestCloseSignature(receiverAddress, balance) {
     let detail = await this.getChannelDetail(receiverAddress)
-    const blockNumber = detail.blockNumber
-    const URL = `${this.handlerDbotDomain(domain, this.hyperProtocolType)}/api/v1/dbots/${receiverAddress}/channels/${from}/${blockNumber}`.toString()
+    const blockNumber = detail.open_block_number
+    const from = this.account.address
+    const URL = `${this.handlerDbotDomain(detail.domain, this.hyperProtocolType)}/api/v1/dbots/${receiverAddress}/channels/${from}/${blockNumber}`.toString()
     console.log('-----------getChannelDetail-----------', URL)
     let resp
     try {
@@ -505,6 +535,7 @@ class Atn {
       throw new Error('Get close signature error')
     }
   }
+
 
 
   /**
