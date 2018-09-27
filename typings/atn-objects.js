@@ -8,7 +8,6 @@ function EndPoint(_method, _uri, _price) {
 
 function Dbot(_address, _name, _domain, _endPoints) {
   return {
-    id: number,
     addr: _address,
     name: _name,
     domain: _domain,

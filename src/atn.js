@@ -9,7 +9,6 @@ let accountTool = require('./tools/account')
 let fs = require('fs')
 let appRootPath = require('app-root-path').resolve('');
 
-let path = require('path');
 const DbotJson = require('./contracts/dbot/dbot.json')
 const TransferChannelJson = require('./contracts/channel/transferChannel.json')
 const MockBlockNumber = 1
@@ -39,9 +38,9 @@ class Atn {
     this.PRODUCT_ENV = 'prod'
 
     if (env && typeof env === 'string' && env.toLowerCase() !== this.PRODUCT_ENV) {
-      this.hyperProtocolType = 'https'
-    } else {
       this.hyperProtocolType = 'http'
+    } else {
+      this.hyperProtocolType = 'https'
     }
   }
 
