@@ -119,12 +119,13 @@ class Atn {
     try {
       dbotContract = new this.web3.eth.Contract(DbotJson.abi, receiverAddress)
     } catch (e) {
-      return CloseChannelException1
+      return new Error(e.toString())
     }
     const dbot = {}
+    const from  = this.account.address
     dbot.domain = Web3.utils.hexToString(await dbotContract.methods.domain().call({from}))
 
-    const channelDetail = await this.getChannelInfo(receiverAddress, from)
+    const channelDetail = await this.getChannelInfo(receiverAddress)
     const blockNumber = channelDetail.blockNumber
     const targetUrl = this.handlerDbotDomain(dbot.domain, this.hyperProtocolType)
     const URL = `${targetUrl}/api/v1/dbots/${receiverAddress}/channels/${from}/${blockNumber}`
@@ -523,7 +524,7 @@ class Atn {
   async requestCloseSignature(receiverAddress, balance) {
     let detail = await this.getChannelDetail(receiverAddress)
     const blockNumber = detail.open_block_number
-    const from = await this.account.address
+    const from = this.account.address
     const URL = `${this.handlerDbotDomain(detail.domain, this.hyperProtocolType)}/api/v1/dbots/${receiverAddress}/channels/${from}/${blockNumber}`.toString()
     console.log('-----------getChannelDetail-----------', URL)
     let resp
