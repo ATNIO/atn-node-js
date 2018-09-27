@@ -1,15 +1,17 @@
 # ATN Client 
-## atn-node-js 
+### atn-node-js 
 English | [简体中文](./README.zh-CN.md)   
  &emsp;&emsp;***atn-node-js*** 是基于 **Node** 和 **Web3** 独立开发的程序包，是 **ATN Client** 的一部分。**ATN Client** 是**ATN生态**的面向用户的重要一环，是连接 **DBotServer** 开发者和 **APP Developer** 的 "桥梁"。**ATN Client** 在 **ATN** 生态中所处位置如下图所示：
 
 ![atn-ecosystem](http://p5vswdxl9.bkt.clouddn.com/ATN%20ecosystem.png "ATN生态")
 
+---
+
 ### ATN Client
 
 **ATN Client**目前有以下两个版本：  
-   -  [atn-node-js](https://github.com/ATNIO/atn-node-js)：node版本程序包;  
-   -  [atn-js](https://github.com/ATNIO/atn-js)：浏览器端使用，结合[atn-wallet](https://github.com/ATNIO/atn-wallet)，使用`atn-wallet`自身的签名算法;
+   - [atn-node-js](https://github.com/ATNIO/atn-node-js)：node版本程序包;  
+   - [atn-js](https://github.com/ATNIO/atn-js)：浏览器端使用，结合[atn-wallet](https://github.com/ATNIO/atn-wallet)，使用`atn-wallet`自身的签名算法;
      
  未来会陆续提供 **Java**、**Python**等主流语言版本。
 
@@ -64,15 +66,34 @@ English | [简体中文](./README.zh-CN.md)
    const atn = new Atn(key.key);
    
    const dbotAddress = "0xe4640e4005903e147ebb54dd9ddf17e85ce53303"
-   const initResult = await atn.initConfig(dbotAddress,)
-
+   var privateKeyFile = "/libs/atnconfig/user.json";//自定义私钥生成所在文件(包含目录)
+  
+   // 2. 初始化调用
+   const result = await atn.initConfig(privateKeyFile, dbotAddress);
+   
    ```
+   ***注***：如果自己有私钥可增加参数如下所示
+   ```javascript
+   var privateKey = '0x01adc971225be058c7031b536375b79115ed58993c86a4ec4288f36fc9eb51b7'; 
+   const result = await atn.initConfig(privateKeyFile, dbotAddress,privateKey);
+   ```
+   
    
    STEP 2：调用DBotServer
    ```javascript
    
-   
-
+   var option = {
+        headers: {
+            "Content-Type": "application/json;charset=UTF-8"
+          },
+          responseEncoding: "GBK",
+          method: "post",
+          data: { text: "百度是一家高科技公司" }
+      };
+      var uri = '/lexer';
+      var method = 'post';
+      // 3. 调用DBotServer AI服务
+      const result = await atn.callDBotAI(dbotAddress,uri,method,option);
    ```
 
  * 3.2 具体使用开发示例   
