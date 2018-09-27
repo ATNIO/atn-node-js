@@ -10,7 +10,7 @@ English | [简体中文](README.md)
 
 ### ATN Client
 
-**ATN Client**目前有以下两个版本：  
+So far, **ATN Client** has Node version and TypeScript version：  
    - [atn-node-js](https://github.com/ATNIO/atn-node-js): this is node version lib ;  
    - [atn-js](https://github.com/ATNIO/atn-js)：used in browser ，we can use with the sign method in [atn-wallet](https://github.com/ATNIO/atn-wallet) 
      
