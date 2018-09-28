@@ -3,23 +3,23 @@ let Web3 = require('web3')
 let BigNumber =require('bignumber.js')
 let assert = require('assert');
 let sleep = require('sleep')
-
 const Atn = require('../src/atn')
 let DBot = require('../src/contracts/dbot/dbot.json')
+let iconv = require('iconv-lite');
 
 // -------------------------------------------
 // Modify following lines before run test
 const http_provider = 'http://0.0.0.0:8545'
 const dbotAddress = '0x0000000000000000000000000000000000000000'
 const dbotConfigPath = './profiles/baidu/nlp/'
-const keystore = require('./accounts/node01/keystore/UTC--2018-06-19T08-46-57.628797023Z--845c0aaba0dabd59115c0601b429e23ec713cc80')
+
 const password = 'passwd'
 // -------------------------------------------
 
 let web3 = new Web3(http_provider)
 const Config = require(dbotConfigPath + 'config.js')
 const DbotProfile = require(dbotConfigPath + Config.dbot.profile)
-const account = web3.eth.accounts.decrypt(keystore, password)
+// const account = web3.eth.accounts.decrypt(keystore, password)
 
 
 // if (web3.eth.getCode(dbotAddress) != DBot.bytecode) {
@@ -156,13 +156,23 @@ describe('Atn Client NodeJS Test', function () {
   //   })
   // })
   
-  describe('#initConfig()',function () {
-    it('should initConfig success',async function () {
-      const dbotAddress="0xfd4f504f373f0af5ff36d9fbe1050e6300699230"
-      const privateKey = "0xc4046f954b3ad367a930529550e2f92eab6c9436a486f522db17b4e6d588384c"
-      const atn = new Atn(account.privateKey, http_provider)
-      const result = atn.initConfig(dbotAddress,null,11)
-      
+  // describe('#initConfig()',function () {
+  //   it('should initConfig success',async function () {
+  //     const dbotAddress="0xfd4f504f373f0af5ff36d9fbe1050e6300699230"
+  //     const privateKey = "0xc4046f954b3ad367a930529550e2f92eab6c9436a486f522db17b4e6d588384c"
+  //     const atn = new Atn(account.privateKey, http_provider)
+  //     const result = atn.initConfig(dbotAddress,null,11)
+  //
+  //   });
+  // })
+  
+  describe('decode ',function () {
+    it('should ', function () {
+      const targetStr = "\ufffd߿Ƽ\ufffd"
+      const str = iconv.encode(targetStr, 'gbk').toString()
+      console.log('str',str)
+
+
     });
   })
 })

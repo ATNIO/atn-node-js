@@ -1,10 +1,16 @@
 {
   "name": "atn-node-js",
-  "version": "0.1.33",
+  "version": "0.1.35",
   "description": "a light client node js lib for Dbot",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ATNIO/atn-node-js.git"
+  },
   "scripts": {
-    "test": "mocha --timeout 5000"
+    "test": "mocha --timeout 5000",
+    "generate-docs": "jsdoc --configure .jsdoc.json --verbose src/atn.js -d docs generate-doc/minami",
+    "deploy-docs": "node tools/gh-pages-publish"
   },
   "keywords": [
     "ai",
@@ -13,16 +19,12 @@
     "dbot"
   ],
   "author": "ATNIO",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ATNIO/atn-node-js.git"
-  },
   "bugs": {
     "url": "https://github.com/ATNIO/atn-node-js/issues",
     "email": "zhangsunny0808@gmail.com"
   },
   "homepage": "https://github.com/ATNIO/atn-node-js",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "app-root-path": "^2.1.0",
     "axios": "^0.18.0",
@@ -40,12 +42,15 @@
     "qs": "^6.5.2",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
+    "shelljs": "^0.8.2",
     "sleep": "^5.2.3",
     "web3": "^1.0.0-beta.34",
     "websocket": "^1.0.26",
     "whatwg-encoding": "^1.0.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "minami": "^1.2.3"
+  },
   "directories": {
     "test": "test"
   }
