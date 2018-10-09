@@ -1,6 +1,6 @@
 {
   "name": "atn-node-js",
-  "version": "0.1.35",
+  "version": "0.1.37",
   "description": "a light client node js lib for Dbot",
   "main": "index.js",
   "repository": {
@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "mocha --timeout 5000",
-    "generate-docs": "jsdoc --configure .jsdoc.json --verbose src/atn.js -d docs generate-doc/minami",
+    "generate-docs-version": "rm -rf docs && jsdoc --configure .jsdoc.json --verbose",
+    "jsdoc-minami-docs": "rm -rf docs && jsdoc src/* -d docs generate-doc/minami",
     "deploy-docs": "node tools/gh-pages-publish"
   },
   "keywords": [

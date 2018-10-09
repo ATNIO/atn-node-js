@@ -166,13 +166,4 @@ describe('Atn Client NodeJS Test', function () {
   //   });
   // })
   
-  describe('decode ',function () {
-    it('should ', function () {
-      const targetStr = "\ufffd߿Ƽ\ufffd"
-      const str = iconv.encode(targetStr, 'gbk').toString()
-      console.log('str',str)
-
-
-    });
-  })
 })
