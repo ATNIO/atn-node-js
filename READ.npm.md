@@ -1,76 +1,73 @@
-natn-js is for building browser AIapps & NodeJS services that interact with ATN Network.
+atn-node-js is for building browser AIapps & NodeJS services that interact with ATN Network.
 
-![atn-js architecture](http://p5vswdxl9.bkt.clouddn.com/ATN-js.svg)
+![atn-node-js architecture](http://p5vswdxl9.bkt.clouddn.com/atn-node-js-2.svg)
 
 ### This JS Client contains the following methods
 
-- [ ] createChannel
-- [ ] getChannelInfo
-- [ ] getChannelDetail
-- [ ] topUpChannel
-- [ ] closeChannel
-- [ ] callDBotAI
-- [ ] callAPI
-- [ ] requestCloseSignature
+- [x] createChannel
+- [x] getChannelInfo
+- [x] getChannelDetail
+- [x] topUpChannel
+- [x] closeChannel
+- [x] callDBotAI
+- [x] callAPI
+- [x] requestCloseSignature
 
-- [ ] initConfig
-- [ ] initAccount
-- [ ] signBalanceProof
-- [ ] getDBotName
-- [ ] getDBotDomain
-- [ ] getPrice
-- [ ] waitTx
-- [ ] privateKeyToAccount
-- [ ] unlockAccountsIfNeeded
-- [ ] asyncSleep
-- [ ] getBalanceProofData
-- [ ] handlerDBotDomain
+- [x] initConfig
+- [x] initAccount
+- [x] signBalanceProof
+- [x] getDBotName
+- [x] getDBotDomain
+- [x] getPrice
+- [x] waitTx
+- [x] privateKeyToAccount
+- [x] unlockAccountsIfNeeded
+- [x] asyncSleep
+- [x] getBalanceProofData
+- [x] handlerDBotDomain
 
 ### Getting started
 
-node version required:v8.11.3
+node version required:  v8.11.3 or above
 
 Clone this repository and install its dependencies:
 
 ```
-git clone https://github.com/ATNIO/atn-js.git
-
-cd atn-js
-
-npm i
+$ npm i atn-node-js --save
 ```
 
+
 ### NPM script
+"test": "mocha --timeout 5000",
+    "generate-docs-version": "rm -rf docs && jsdoc --configure .jsdoc.json --verbose",
+    "jsdoc-minami-docs": "rm -rf docs && jsdoc src/atn.js -d docs generate-doc/minami",
+    "": 
+ - `npm run test`: Run test suite
+ - `npm run generate-docs-version`: generate the `atn-node-js` API documents by jsdoc  
+ - `npm run deploy-docs`: Run linting and generate coverage
 
-- `npm run build` builds the library to `dist`
-
-	* `dist/lib/atn.js` A CommonJS bundle, suitable for use in Node.js, that requires the external dependency. This corresponds to the "main" field in package.json
-	* `dist/atn.es5.js` an ES module bundle, suitable for use in other people's libraries and applications, that imports the external dependency. This corresponds to the "module" field in package.json
-	* `dist/atn.umd.js` a UMD build, suitable for use in any environment (including the browser, as a <script> tag), that includes the external dependency. This corresponds to the "browser" field in package.json
-
- - `npm t`: Run test suite
- - `npm start`: Run `npm run build` in watch mode
- - `npm run test:watch`: Run test suite in [interactive watch mode](http://facebook.github.io/jest/docs/cli.html#watch)
- - `npm run test:prod`: Run linting and generate coverage
- - `npm run build`: Generate bundles and typings, create docs
- - `npm run lint`: Lints code
 
 ### Usage
 
 **Step 1:**
-Getting all Dbot count
-`atn.getDbotCount()`
+Create calling channel between account and DBot  
+`atn.createChannel()`
 
 **Step 2:**
-Getting a Dbot detail 
-`atn.getDbotInfo()`
+Getting calling channel information from DBotServer  
+`atn.getChannelDetail()`
 
 **Step 3:**
-Opening a transfer channel
-`atn.openChannel()`
+Use the calling channel to call DBot Server AI services  
+`atn.callDBotAI()`
 
 **Step 4:**
-Calling the AI`lib.callAI()`
+Increase the calling times , you can topup the balance to the channel  
+`atn.topUpChannel()`
+
+**Step 5:**
+Get your balance back from channel 
+`atn.closeChannel()`
 
 
 
